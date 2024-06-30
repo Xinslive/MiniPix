@@ -1,0 +1,146 @@
+@media screen and (max-width: 1000px) {
+	.gallery {
+		column-count: 4!important;
+	}
+}
+
+@media screen and (max-width: 900px) {
+	.gallery {
+		column-count: 3!important;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	.gallery {
+		column-count: 2!important;
+	}
+}
+
+@media screen and (max-width: 200px) {
+	.gallery {
+		column-count: 1!important;
+	}
+}
+
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	background: url(https://cdn.yeuer.com/img/2024/06/29/317145.webp) no-repeat 100% 100%;
+	background-size: cover;
+	background-attachment: fixed;
+}
+
+.floating-link, .top-link {
+	position: fixed;
+    bottom: 45px;
+    right: 0;
+    padding: 5px 5px 0px 5px;
+    margin: 15px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+.top-link {
+    bottom: 0;
+}
+
+.gallery {
+	column-count: 5;
+    column-gap: 10px;
+    max-width: 1200px;
+    padding: 20px;
+	margin: 20px 10px 40px 10px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-item {
+	break-inside: avoid;
+	margin-bottom: 10px;
+	position: relative;
+}
+
+.gallery-item img {
+	width: 100%;
+	height: auto;
+	max-width: 230px;
+	border-radius: 8px;
+}
+
+.delete-btn, .copy-btn {
+    position: absolute;
+    top: 5px;
+    padding: 5px 5px 0px 5px;
+    cursor: pointer;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    background-color: rgb(0 0 0 / 20%);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+.delete-btn {
+    right: 5px;
+}
+
+.delete-btn:hover {
+    background-color: rgb(255 0 0 / .5);
+}
+.copy-btn {
+    right: 40px;
+}
+.copy-btn:hover {
+    background-color: rgba(0 0 255 / .5);
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.notification.delete-success {
+    background-color: #ff4d4d;
+}
+.notification.copy-success {
+    background-color: #4caf50;
+}
+
+.page-link {
+    display: inline-block;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    text-align: center;
+    line-height: 30px;
+    color: #bbb;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.page-link:hover {
+    background-color: #8d8d8d;
+    color: #000;
+    border-color: #999;
+}
+
+.pagination {
+	position: fixed;
+	bottom: 0;
+}
