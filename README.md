@@ -22,7 +22,9 @@ https://dev.yeuer.com/
 感谢🙏梦爱吃鱼（blog.bsgun.cn）对本项目的美化！
 ## **安装教程**
 将文件上传到网站根目录，访问  网址/install.php  ，填写相关信息，即可完成安装。
-## **依赖拓展**
+## **运行环境**
+推荐PHP 8.1 + MySQL 5.7
+
 本程序依赖PHP的 Fileinfo 、 Imagick 拓展，需要自行安装。依赖 pcntl 扩展（宝塔PHP默认已安装）
 
 要求 pcntl_signal 和 pcntl_alarm 函数可用（需主动解除禁用）。
