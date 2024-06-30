@@ -20,10 +20,18 @@ https://dev.yeuer.com/
 感谢🙏梦爱吃鱼（blog.bsgun.cn）对本项目的美化！
 ## **安装教程**
 将文件上传到网站根目录，访问  网址/install.php  ，填写相关信息，即可完成安装。
-## **请注意**
+## **依赖拓展**
 本程序依赖PHP的 Fileinfo 、 Imagick 拓展，需要自行安装。依赖 pcntl 扩展（宝塔PHP默认已安装）
 
-要求 pcntl_signal 和 pcntl_alarm 函数可用（需解除禁用）。
+要求 pcntl_signal 和 pcntl_alarm 函数可用（需主动解除禁用）。
+
+## **安全配置**
+设置如下 nginx 规则
+```
+location ~* /config\.ini$ {
+    deny all;
+}
+```
 ## **拓展功能**
 
 本程序支持 UPGIT 对接，对接方法如下：
