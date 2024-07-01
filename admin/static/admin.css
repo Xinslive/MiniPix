@@ -33,16 +33,16 @@ body {
 	background-attachment: fixed;
 }
 
-.floating-link, .top-link {
-	position: fixed;
+.floating-link,
+.top-link {
+    position: fixed;
     bottom: 45px;
     right: 0;
     padding: 5px 5px 0px 5px;
     margin: 15px;
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background-color: #FFFFFF;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 .top-link {
     bottom: 0;
@@ -126,10 +126,9 @@ body {
     margin: 5px;
     text-align: center;
     line-height: 30px;
-    color: #bbb;
-    background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    color: #444;
+    background-color: #FFFFFF;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     text-decoration: none;
     transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
