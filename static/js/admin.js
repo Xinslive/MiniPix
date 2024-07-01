@@ -61,21 +61,32 @@
             });
         }
     /*平滑滚动到顶部*/
-      const button = document.querySelector('#scroll-to-top');
-      button.addEventListener('click', () => {
-        const scrollTop = window.scrollY;
-        const scrollStep = Math.PI / (500 / 15);
-        const cosParameter = scrollTop / 2;
-        let scrollCount = 0;
-        let scrollMargin;
-        const scrollInterval = setInterval(() => {
-          if (window.scrollY != 0) {
-            scrollCount = scrollCount + 1;
-            scrollMargin = cosParameter - cosParameter * Math.cos(scrollCount * scrollStep);
-            window.scrollTo(0, (scrollTop - scrollMargin));
-          } else clearInterval(scrollInterval);
-        }, 15);
-      });
+        const button = document.querySelector('#scroll-to-top');
+        button.addEventListener('click', () => {
+            const scrollTop = window.scrollY;
+            const scrollStep = Math.PI / (500 / 15);
+            const cosParameter = scrollTop / 2;
+            let scrollCount = 0;
+            let scrollMargin;
+
+            if ('scrollBehavior' in document.documentElement.style) { // 检查浏览器是否支持平滑滚动
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                return; // 在支持平滑滚动时直接使用内置方法进行平滑回到顶部
+            }
+
+            const scrollInterval = setInterval(() => {
+                if (window.scrollY !== 0) {
+                    scrollCount++;
+                    scrollMargin = cosParameter - cosParameter * Math.cos(scrollCount * scrollStep);
+                    window.scrollTo(0, (scrollTop - scrollMargin));
+                } else {
+                    clearInterval(scrollInterval);
+                }
+            }, 15);
+        });
       // 分页
         function bindImageActions() {
             document.querySelectorAll('.delete-btn').forEach(function(button) {
