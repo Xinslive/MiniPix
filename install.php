@@ -10,6 +10,7 @@ if (file_exists('./admin/install.lock')) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>系统已安装</title>
+        <link rel="shortcut icon" href="static/favicon.ico">
         <style>
             body {
                 display: flex;
@@ -137,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>网站安装</title>
+	<link rel="shortcut icon" href="static/favicon.ico">
     <style>
 body {
     font-family: Arial, sans-serif;

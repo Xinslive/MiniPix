@@ -1,0 +1,95 @@
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+body {
+	background: url(https://dev.yeuer.com/upload/2024/07/01/696852.webp) no-repeat 100% 100%;
+	background-size: cover;
+	background-attachment:fixed;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+}
+/*鼠标小圆点*/
+#cursor {
+    position: fixed;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 25px;
+    opacity: .25;
+    z-index: 10086;
+    pointer-events: none;
+    transition: .2s ease-in-out;
+    transition-property: background, opacity, transform;
+}
+
+#cursor.hidden {
+    opacity: 0;
+}
+
+#cursor.active {
+    opacity: .5;
+    transform: scale(.5);
+}
+
+.login-container {
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    color: #eee;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+.form-group input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    outline: 0;
+    color: #e9ffe1;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    color: #eee;
+    transition: 0.2s;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+button:hover {
+    box-shadow: 0px 0px 17px -4px #7b42e2;
+    border-color: #976cff;
+    background-color: #2e25464d;
+}
+
+button:active {
+  box-shadow: 0px 0px 17px -7px #976cff;
+  border-color: #976cff;
+  transform: scale(0.95);
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
