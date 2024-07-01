@@ -96,7 +96,7 @@ body {
 .pagination {
     position: fixed;
     bottom: 0;
-    z-index: 9;
+    z-index: 10;
 }
 
 .delete-btn,
@@ -180,6 +180,7 @@ body {
     transition: all .4s;
     border-radius: 10px;
     color: #fff;
+    z-index: 99;
     background-color: rgb(0 128 0 / .7);
     animation: fadeInshowt .8s forwards;
 }
@@ -193,6 +194,7 @@ body {
     transition: all .4s;
     border-radius: 10px;
     color: #fff;
+    z-index: 99;
     background-color: rgb(255 0 0 / .5);
     animation: fadeInshowt .8s forwards;
 }
