@@ -47,12 +47,210 @@ storage = local
 要求 pcntl_signal 和 pcntl_alarm 函数可用（需主动解除禁用）。
 
 ## **安全配置**
+### **配置信息安全**
 设置如下 nginx 规则
 ```
 location ~* /config\.ini$ {
     deny all;
 }
 ```
+### **图片合规检测**
+#### **使用ModerateContent**
+ModerateContent提供免费的NSFW检测API。你可以在validate.php中添加对ModerateContent的请求。
+```
+<?php
+session_start();
+
+function isUploadAllowed() {
+    // 上传大小限制
+    if ($_FILES['image']['size'] > 10000000) {
+        return '文件大小超过10MB';
+    }
+
+    // 上传频率限制
+    $timeLimit = 5; // 10秒
+    if (isset($_SESSION['last_upload_time'])) {
+        $lastUploadTime = $_SESSION['last_upload_time'];
+        if (time() - $lastUploadTime < $timeLimit) {
+            return '上传过于频繁，请稍后再试';
+        }
+    }
+
+    // 更新最后上传时间
+    $_SESSION['last_upload_time'] = time();
+
+    return true;
+}
+
+function moderateContent($imagePath) {
+    $url = 'https://api.moderatecontent.com/moderate/?key=YOUR_API_KEY&url=' . urlencode($imagePath);
+    $response = file_get_contents($url);
+    $result = json_decode($response, true);
+
+    return $result['rating_label'] !== 'adult';
+}
+
+$uploadCheck = isUploadAllowed();
+if ($uploadCheck !== true) {
+    echo json_encode(['error' => $uploadCheck]);
+    exit();
+}
+
+// 临时存储文件以供审查
+$imagePath = '/tmp/' . basename($_FILES['image']['name']);
+move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+
+if (!moderateContent($imagePath)) {
+    echo json_encode(['error' => '上传的图片包含不适当内容']);
+    exit();
+}
+
+// 其他代码...
+?>
+```
+#### **使用百度图像审核**
+百度AI提供的图像审核服务可以更精确地检测不适当内容，你需要在百度AI平台注册并获取API密钥。
+注：这只是一个示例，把KEY保存在这里是不安全的。可以存到config.ini文件中，具体方法不赘述。
+```
+<?php
+session_start();
+
+function isUploadAllowed() {
+    // 上传大小限制
+    if ($_FILES['image']['size'] > 10000000) {
+        return '文件大小超过10MB';
+    }
+
+    // 上传频率限制
+    $timeLimit = 5; // 5秒
+    if (isset($_SESSION['last_upload_time'])) {
+        $lastUploadTime = $_SESSION['last_upload_time'];
+        if (time() - $lastUploadTime < $timeLimit) {
+            return '上传过于频繁，请稍后再试';
+        }
+    }
+
+    // 更新最后上传时间
+    $_SESSION['last_upload_time'] = time();
+
+    return true;
+}
+
+function baiduImageAudit($imagePath) {
+    $apiKey = 'YOUR_API_KEY';
+    $secretKey = 'YOUR_SECRET_KEY';
+
+    // 获取access_token
+    $authUrl = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=' . $apiKey . '&client_secret=' . $secretKey;
+    $authResponse = file_get_contents($authUrl);
+    $authResult = json_decode($authResponse, true);
+    $accessToken = $authResult['access_token'];
+
+    // 读取图片并进行Base64编码
+    $imageData = base64_encode(file_get_contents($imagePath));
+
+    // 审核请求
+    $url = 'https://aip.baidubce.com/rest/2.0/solution/v1/img_censor/v2/user_defined?access_token=' . $accessToken;
+    $postData = [
+        'image' => $imageData,
+    ];
+    $options = [
+        'http' => [
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'POST',
+            'content' => http_build_query($postData),
+        ],
+    ];
+    $context  = stream_context_create($options);
+    $response = file_get_contents($url, false, $context);
+    $result = json_decode($response, true);
+
+    return $result['conclusion'] !== '不合规';
+}
+
+$uploadCheck = isUploadAllowed();
+if ($uploadCheck !== true) {
+    echo json_encode(['error' => $uploadCheck]);
+    exit();
+}
+
+// 临时存储文件以供审查
+$imagePath = '/tmp/' . basename($_FILES['image']['name']);
+move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+
+if (!baiduImageAudit($imagePath)) {
+    echo json_encode(['error' => '上传的图片包含不适当内容']);
+    exit();
+}
+
+// 其他代码...
+?>
+```
+#### **自建NSFW服务**
+你也可以使用开源的NSFW模型，如nsfwjs，并在本地或服务器上部署。
+```
+<?php
+session_start();
+
+function isUploadAllowed() {
+    // 上传大小限制
+    if ($_FILES['image']['size'] > 10000000) {
+        return '文件大小超过10MB';
+    }
+
+    // 上传频率限制
+    $timeLimit = 5; // 5秒
+    if (isset($_SESSION['last_upload_time'])) {
+        $lastUploadTime = $_SESSION['last_upload_time'];
+        if (time() - $lastUploadTime < $timeLimit) {
+            return '上传过于频繁，请稍后再试';
+        }
+    }
+
+    // 更新最后上传时间
+    $_SESSION['last_upload_time'] = time();
+
+    return true;
+}
+
+function nsfwCheck($imagePath) {
+    $url = 'http://your_nsfw_service_endpoint';
+    $imageData = base64_encode(file_get_contents($imagePath));
+
+    $postData = json_encode(['image' => $imageData]);
+    $options = [
+        'http' => [
+            'header'  => "Content-Type: application/json\r\n",
+            'method'  => 'POST',
+            'content' => $postData,
+        ],
+    ];
+    $context  = stream_context_create($options);
+    $response = file_get_contents($url, false, $context);
+    $result = json_decode($response, true);
+
+    return $result['safe'];
+}
+
+$uploadCheck = isUploadAllowed();
+if ($uploadCheck !== true) {
+    echo json_encode(['error' => $uploadCheck]);
+    exit();
+}
+
+// 临时存储文件以供审查
+$imagePath = '/tmp/' . basename($_FILES['image']['name']);
+move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+
+if (!nsfwCheck($imagePath)) {
+    echo json_encode(['error' => '上传的图片包含不适当内容']);
+    exit();
+}
+
+// 其他代码...
+?>
+```
+
 ## **拓展功能**
 
 本程序支持 UPGIT 对接，对接方法如下：
