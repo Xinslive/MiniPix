@@ -107,9 +107,3 @@ token = "xxxxxxxxxxxxxxxxxxxxx"
     }
 }
 ```
-## **额外提醒**
-由于将图片上传到阿里云oss，使用了阿里云的sdk，如果你下载的不是我打包的安装包，而是直接下载的源代码压缩包，那你还需要在网站根目录执行相关的指令安装oss sdk.
-```
-composer require aliyuncs/oss-sdk-php
-```
-参考文档：https://help.aliyun.com/zh/oss/developer-reference/installation-13
