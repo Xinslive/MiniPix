@@ -80,12 +80,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result = $mysqli->query($checkTableSQL);
             if ($result && $result->num_rows === 0) {
                 $createTableSQL = "
-                CREATE TABLE images (
+                CREATE TABLE IF NOT EXISTS images (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     url VARCHAR(255) NOT NULL,
                     path VARCHAR(255) NOT NULL,
+                    storage ENUM('oss', 'local') NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
                 ";
                 if ($mysqli->query($createTableSQL) === FALSE) {
                     $error = '创建数据表失败: ' . $mysqli->error;
@@ -107,7 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'cdndomain' => $_POST['oss_cdndomain'],
         ];
         $token = [
-            'validToken' => $_POST['token_validToken'],
+            'validToken' => '1c17b11693cb5ec63859b091c5b9c1b2',
+            'storage' => 'oss'
         ];
 
         $configContent = file_get_contents('./admin/config.ini');
@@ -115,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($oss as $key => $value) {
             $configContent .= "$key = $value\n";
         }
-        $configContent .= "\n[Token]\n";
+        $configContent .= "\n[Other]\n";
         foreach ($token as $key => $value) {
             $configContent .= "$key = $value\n";
         }
@@ -280,10 +282,6 @@ div form .form-group input[type="submit"] {
                 <div class="form-group">
                     <label for="oss_cdndomain">OSS CDN 域名</label>
                     <input type="text" id="oss_cdndomain" name="oss_cdndomain" value="oss-cdn.your-domain.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="token_validToken">Valid Token (保持默认就好，修改需要同步修改static/script.js)</label>
-                    <input type="text" id="token_validToken" name="token_validToken" value="1c17b11693cb5ec63859b091c5b9c1b2" required>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="完成安装">

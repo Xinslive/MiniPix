@@ -245,15 +245,6 @@ document.onkeydown = document.onkeyup = document.onkeypress = function() {
   }
 }
 
-function detectDevTools() {
-  setInterval(function() {
-    if (window.outerWidth - window.innerWidth > 100 || window.outerHeight - window.innerHeight > 100) {
-      window.location.href = "https://www.baidu.com";
-    }
-  }, 200);
-}
-detectDevTools();
-
 class Ex {
     constructor() {
         this.pos = {

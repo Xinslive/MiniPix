@@ -33,7 +33,7 @@ if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>登录</title>
-        <link rel="stylesheet" type="text/css" href="login.css">
+        <link rel="stylesheet" type="text/css" href="static/login.css">
     </head>
     <body>
         <div class="login-container">
@@ -69,7 +69,7 @@ $result = $mysqli->query($query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>后台</title>
-    <link rel="stylesheet" type="text/css" href="admin.css">
+    <link rel="stylesheet" type="text/css" href="static/admin.css">
     <script type="text/javascript" src="admin.js"></script>
 </head>
 <body>

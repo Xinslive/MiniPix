@@ -15,7 +15,7 @@ $dbName = $config['dbName'];
 
 $mysqli = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
 if ($mysqli->connect_error) {
-    die("Database connection failed: " . $mysqli->connect_error);
+    die("数据库连接失败: " . $mysqli->connect_error);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,14 +27,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $ossKey = parse_url($path, PHP_URL_PATH);
+        $stmt = $mysqli->prepare("SELECT storage FROM images WHERE path = ?");
+        if (!$stmt) {
+            throw new Exception("数据库错误: " . $mysqli->error);
+        }
+        $stmt->bind_param("s", $path);
+        $stmt->execute();
+        $stmt->bind_result($storage);
+        $stmt->fetch();
+        $stmt->close();
 
-        $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
-        $ossClient->deleteObject($bucket, $ossKey);
+        if (empty($storage)) {
+            throw new Exception("未找到相应的图片记录");
+        }
+
+        if ($storage === 'oss') {
+            $ossKey = parse_url($path, PHP_URL_PATH);
+            $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
+            $ossClient->deleteObject($bucket, $ossKey);
+        } elseif ($storage === 'local') {
+            $localFilePath = '../' . $path;
+            if (file_exists($localFilePath)) {
+                unlink($localFilePath);
+            } else {
+                throw new Exception("文件不存在");
+            }
+        } else {
+            throw new Exception("无效的 storage 配置");
+        }
 
         $stmt = $mysqli->prepare("DELETE FROM images WHERE path = ?");
         if (!$stmt) {
-            throw new Exception("Prepare statement error: " . $mysqli->error);
+            throw new Exception("数据库错误: " . $mysqli->error);
         }
         $stmt->bind_param("s", $path);
         $stmt->execute();
@@ -46,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $stmt->close();
     } catch (OssException $e) {
-        echo json_encode(['result' => 'error', 'message' => '从oss删除失败: ' . $e->getMessage()]);
+        echo json_encode(['result' => 'error', 'message' => '从 oss 删除失败: ' . $e->getMessage()]);
         error_log("Failed to delete image from OSS: " . $e->getMessage());
     } catch (Exception $e) {
         echo json_encode(['result' => 'error', 'message' => '未知错误: ' . $e->getMessage()]);
@@ -58,3 +82,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $mysqli->close();
 ?>
+
