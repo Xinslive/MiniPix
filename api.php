@@ -224,8 +224,8 @@ if ($fileMimeType !== 'image/svg+xml') {
     $compressedWidth = $compressedInfo[0];
     $compressedHeight = $compressedInfo[1];
 } else {
-    $compressedWidth = 666;
-    $compressedHeight = 666;
+    $compressedWidth = 100;
+    $compressedHeight = 100;
 }
 $compressedSize = filesize($finalFilePath);
 
