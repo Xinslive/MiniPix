@@ -68,7 +68,7 @@ function isUploadAllowed() {
     }
 
     // 上传频率限制
-    $timeLimit = 5; // 10秒
+    $timeLimit = 5; // 5秒
     if (isset($_SESSION['last_upload_time'])) {
         $lastUploadTime = $_SESSION['last_upload_time'];
         if (time() - $lastUploadTime < $timeLimit) {
