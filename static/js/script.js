@@ -199,22 +199,22 @@ function getPathFromUrl(url) {
     return path;
 }
 
-document.getElementById("urlOutput").addEventListener("click", function(e) {
-    if (e.target.classList.contains("copy-indicator")) {
-        var copyText = e.target;
-        copyText.select();
-        document.execCommand("copy");
-        var notification = document.createElement('div');
-        notification.textContent = '图片复制成功';
-        notification.classList.add('copied-message');
-        document.body.appendChild(notification);
-        setTimeout(function() {
-            notification.classList.add('message-right');
-            setTimeout(function() {
-                notification.parentNode.removeChild(notification);
-            }, 1000);
-        }, 1500);
-    }
-});
-});
+document.querySelectorAll('.copy-indicator').forEach(item => {
+    item.addEventListener('click', function(event) {
+        event.preventDefault();
+        const textToCopy = this.value;
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                const copiedMsg = document.createElement('div');
+                copiedMsg.className = 'copy-success';
+                copiedMsg.textContent = '图片复制成功';
+                document.body.appendChild(copiedMsg);
+                setTimeout(() => {
+                    copiedMsg.classList.add('message-right');
+                    setTimeout(() => {
+                        document.body.removeChild(copiedMsg);
+                    }, 1000);
+                }, 1000);
+            });
+    });
 });
