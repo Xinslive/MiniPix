@@ -38,7 +38,7 @@ https://dev.yeuer.com/
 storge = local
 ```
 ## **安装教程**
-将文件上传到网站根目录，访问  网址/install.php  ，填写相关信息，即可完成安装。
+首先下载源码ZIP，将文件上传到网站根目录，访问  网址/install.php  ，填写相关信息，即可完成安装。
 ## **运行环境**
 推荐PHP 8.1 + MySQL 5.7
 
