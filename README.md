@@ -35,7 +35,7 @@ https://dev.yeuer.com/
 
 如果你需要本地储存图片，请安装后修改config.ini文件
 ```
-storge = local
+storage = local
 ```
 ## **安装教程**
 首先下载源码ZIP，将文件上传到网站根目录，访问  网址/install.php  ，填写相关信息，即可完成安装。
