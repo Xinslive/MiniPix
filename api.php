@@ -125,7 +125,7 @@ try {
             respondAndExit(['result' => 'error', 'code' => 403, 'message' => 'Token错误']);
         }
         $uploadDir = 'upload/';
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/octet-stream'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/octet-stream'];
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $fileMimeType = finfo_file($finfo, $_FILES['image']['tmp_name']);
         finfo_close($finfo);
@@ -133,9 +133,9 @@ try {
         $datePath = date('Y/m/d');
         $uploadDirWithDatePath = $uploadDir . $datePath . '/';
         if (!is_dir($uploadDirWithDatePath)) {
-             if (!mkdir($uploadDirWithDatePath, 0777, true)) {
-                    logMessage('无法创建上传目录: ' . $uploadDirWithDatePath);
-                    respondAndExit(['result' => 'error', 'code' => 500, 'message' => '无法创建上传目录']);
+            if (!mkdir($uploadDirWithDatePath, 0777, true)) {
+                logMessage('无法创建上传目录: ' . $uploadDirWithDatePath);
+                respondAndExit(['result' => 'error', 'code' => 500, 'message' => '无法创建上传目录']);
             }
         }
 
@@ -145,7 +145,7 @@ try {
         }
 
         $imageInfo = getimagesize($_FILES['image']['tmp_name']);
-        if ($imageInfo === false) {
+        if ($imageInfo === false && $fileMimeType !== 'image/svg+xml') {
             logMessage('文件不是有效的图片');
             respondAndExit(['result' => 'error', 'code' => 406, 'message' => '文件不是有效的图片']);
         }
@@ -160,68 +160,62 @@ try {
             imagedestroy($image);
         }
 
-        if (!is_dir($uploadDir)) {
-            if (!mkdir($uploadDir, 0777, true)) {
-                logMessage('无法创建上传目录');
-                respondAndExit(['result' => 'error', 'code' => 500, 'message' => '无法创建上传目录']);
-            }
-        }
-
         $randomFileName = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
         $newFilePathWithoutExt = $uploadDirWithDatePath . $randomFileName;
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        if(empty($extension)){
+        if (empty($extension)) {
             $extension = 'webp';
         }
         $newFilePath = $newFilePathWithoutExt . '.' . $extension;
         $finalFilePath = $newFilePath;
 
-if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
-    logMessage("文件上传成功: $newFilePath");
-    ini_set('memory_limit', '1024M');
-    set_time_limit(300);
-    $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 60;
+        if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
+            logMessage("文件上传成功: $newFilePath");
+            ini_set('memory_limit', '1024M');
+            set_time_limit(300);
+            $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 60;
 
-    $convertSuccess = true;
-    $timeout = 10;
+            $convertSuccess = true;
+            $timeout = 10;
 
-    pcntl_async_signals(true);
+            pcntl_async_signals(true);
 
-    $signalReceived = false;
-    pcntl_signal(SIGALRM, function() use (&$signalReceived) {
-        $signalReceived = true;
-    });
+            $signalReceived = false;
+            pcntl_signal(SIGALRM, function() use (&$signalReceived) {
+                $signalReceived = true;
+            });
 
-    pcntl_alarm($timeout);
+            pcntl_alarm($timeout);
 
-if ($fileMimeType === 'image/png') {
-    $convertSuccess = convertPngWithImagick($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
-    if ($convertSuccess) {
-        $finalFilePath = $newFilePathWithoutExt . '.webp';
-        unlink($newFilePath);
-    }
-} elseif ($fileMimeType === 'image/gif') {
-    $convertSuccess = convertGifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
-    if ($convertSuccess) {
-        $finalFilePath = $newFilePathWithoutExt . '.webp';
-        unlink($newFilePath);
-    }
-} elseif ($fileMimeType !== 'image/webp') {
-    $convertSuccess = convertToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
-    if ($convertSuccess) {
-        $finalFilePath = $newFilePathWithoutExt . '.webp';
-        unlink($newFilePath);
-    }
-}
+            if ($fileMimeType === 'image/png') {
+                $convertSuccess = convertPngWithImagick($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+                if ($convertSuccess) {
+                    $finalFilePath = $newFilePathWithoutExt . '.webp';
+                    unlink($newFilePath);
+                }
+            } elseif ($fileMimeType === 'image/gif') {
+                $convertSuccess = convertGifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+                if ($convertSuccess) {
+                    $finalFilePath = $newFilePathWithoutExt . '.webp';
+                    unlink($newFilePath);
+                }
+            } elseif ($fileMimeType !== 'image/webp' && $fileMimeType !== 'image/svg+xml') {
+                $convertSuccess = convertToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+                if ($convertSuccess) {
+                    $finalFilePath = $newFilePathWithoutExt . '.webp';
+                    unlink($newFilePath);
+                }
+            }
 
-    pcntl_alarm(0);
+            if ($signalReceived) {
+                logMessage("文件转换超时: $newFilePath");
+                unlink($newFilePath);
+                respondAndExit(['result' => 'error', 'code' => 500, 'message' => '文件转换超时']);
+            }
 
-    if ($signalReceived) {
-        logMessage('转换超时，上传原始图片');
-        $convertSuccess = false;
-        $finalFilePath = $newFilePath;
-    }
+            pcntl_alarm(0);
 
+if ($fileMimeType !== 'image/svg+xml') {
     $compressedInfo = getimagesize($finalFilePath);
     if (!$compressedInfo) {
         logMessage('无法获取压缩后图片信息');
@@ -229,8 +223,11 @@ if ($fileMimeType === 'image/png') {
     }
     $compressedWidth = $compressedInfo[0];
     $compressedHeight = $compressedInfo[1];
-    $compressedSize = filesize($finalFilePath);
-
+} else {
+    $compressedWidth = 666;
+    $compressedHeight = 666;
+}
+$compressedSize = filesize($finalFilePath);
 
 if ($storage === 'oss') {
     try {
@@ -305,3 +302,4 @@ if ($storage === 'oss') {
     respondAndExit(['result' => 'error', 'code' => 500, 'message' => '发生未知错误: ' . $e->getMessage()]);
 }
 ?>
+
