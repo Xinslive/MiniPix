@@ -97,28 +97,64 @@ $result = $mysqli->query($query);
         ?>
     </div>
 
-    <div class="pagination">
-    <?php
-    $total_pages_query = "SELECT COUNT(id) as total FROM images";
-    $total_pages_result = $mysqli->query($total_pages_query);
+<div class="pagination">
+<?php
+$total_pages_query = "SELECT COUNT(id) as total FROM images";
+$total_pages_result = $mysqli->query($total_pages_query);
 
-    if ($total_pages_result) {
-        $total_rows = $total_pages_result->fetch_assoc()['total'];
+if ($total_pages_result) {
+    $total_rows = $total_pages_result->fetch_assoc()['total'];
 
-        if ($total_rows > 0) {
-            $total_pages = ceil($total_rows / $items_per_page);
-        } else {
-            $total_pages = 0;
+    if ($total_rows > 0) {
+        $total_pages = ceil($total_rows / $items_per_page);
+    } else {
+        $total_pages = 0;
+    }
+} else {
+    die("查询错误：" . $mysqli->error);
+}
+
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$max_links = 7;
+$half_max_links = floor($max_links / 2);
+
+if ($total_pages > 1) {
+    if ($current_page > 1) {
+        echo '<a class="page-link" href="?page=' . ($current_page - 1) . '">&laquo;</a> ';
+    }
+
+    if ($total_pages <= $max_links) {
+        for ($i = 1; $i <= $total_pages; $i++) {
+            echo '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '">' . $i . '</a> ';
         }
     } else {
-        die("查询错误：" . $mysqli->error);
+        if ($current_page <= $half_max_links) {
+            for ($i = 1; $i <= $max_links - 1; $i++) {
+                echo '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '">' . $i . '</a> ';
+            }
+            echo '... <a class="page-link" href="?page=' . $total_pages . '">' . $total_pages . '</a> ';
+        } elseif ($current_page > $total_pages - $half_max_links) {
+            echo '<a class="page-link" href="?page=1">1</a> ... ';
+            for ($i = $total_pages - $max_links + 2; $i <= $total_pages; $i++) {
+                echo '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '">' . $i . '</a> ';
+            }
+        } else {
+            echo '<a class="page-link" href="?page=1">1</a> ... ';
+            for ($i = $current_page - $half_max_links + 1; $i <= $current_page + $half_max_links - 1; $i++) {
+                echo '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '">' . $i . '</a> ';
+            }
+            echo '... <a class="page-link" href="?page=' . $total_pages . '">' . $total_pages . '</a> ';
+        }
     }
-    for ($i = 1; $i <= $total_pages; $i++) {
-        echo '<a class="page-link" href="?page=' . $i . '">' . $i . '</a> ';
+
+    if ($current_page < $total_pages) {
+        echo '<a class="page-link" href="?page=' . ($current_page + 1) . '">&raquo;</a> ';
     }
-    $mysqli->close();
-    ?>
-    </div>
+}
+
+$mysqli->close();
+?>
+</div>
 <a href="/" class="floating-link"><svg t="1719609773699" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4283" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30"><path d="M566.869333 94.72l6.101334 4.778667 353.493333 298.666666c7.637333 6.101333 12.202667 15.232 12.202667 22.869334a30.549333 30.549333 0 0 1-30.464 30.464 31.445333 31.445333 0 0 1-17.664-5.077334l-3.669334-2.56-9.173333-7.594666v339.797333c0 66.048-49.450667 120.746667-110.250667 124.757333l-7.082666 0.213334H263.68c-63.146667 0-113.493333-52.266667-117.12-117.376l-0.213333-7.594667v-339.797333l-10.666667 9.130666a28.970667 28.970667 0 0 1-19.84 7.637334A30.549333 30.549333 0 0 1 85.333333 422.570667c0-8.917333 3.157333-15.658667 8.661334-21.205334l3.541333-3.2 358.101333-298.666666a90.154667 90.154667 0 0 1 111.232-4.821334zM497.493333 144l-3.797333 2.688-286.464 239.232v390.101333c0 32.981333 22.954667 60.586667 52.352 63.701334l5.546667 0.298666h124.970666v-213.333333a91.733333 91.733333 0 0 1 84.906667-91.178667l6.528-0.256h60.928a91.733333 91.733333 0 0 1 91.221333 84.906667l0.213334 6.528v213.333333h124.970666c30.122667 0 54.826667-25.6 57.6-57.856l0.298667-6.144V384.469333L533.333333 146.730667a32.64 32.64 0 0 0-35.84-2.688z m44.970667 452.224h-60.928a30.549333 30.549333 0 0 0-30.506667 30.464v213.333333h121.941334v-213.333333a30.549333 30.549333 0 0 0-30.506667-30.464z" fill="#bbb" p-id="4284"></path></svg></a>
 <a href="#" class="top-link"><svg t="1719611181828" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2153" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30"><path d="M512 896a64 64 0 0 0 64-64V325.12l168.106667 168.106667a64 64 0 0 0 90.453333-90.453334L557.226667 125.44a64 64 0 0 0-90.453334 0L189.44 402.773333a64 64 0 1 0 90.453333 90.453334l168.106667-168.106667v506.88c0 35.328 28.672 64 64 64z" p-id="2154" fill="#bbb"></path></svg></a>
 <div id="notification" class="notification"></div>
