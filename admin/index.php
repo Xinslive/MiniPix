@@ -135,7 +135,7 @@ function renderPagination($mysqli, $items_per_page, $current_page) {
 }
 
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$items_per_page = 3;
+$items_per_page = 45;
 $offset = ($current_page - 1) * $items_per_page;
 
 ?>
