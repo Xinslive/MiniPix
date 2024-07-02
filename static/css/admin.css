@@ -250,8 +250,19 @@ button:hover {
     gap: 30px;
 }
 
-.confirm-buttons-x {
+.confirm-buttons-yes {
     color: #212121;
+}
+
+.confirm-buttons-no {
+    color: #212121;
+}
+.confirm-buttons-yes:hover {
+    background-color: #FF4500;
+}
+
+.confirm-buttons-no:hover {
+    background-color: #4CAF50;
 }
 
 button {
