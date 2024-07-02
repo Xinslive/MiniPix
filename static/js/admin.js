@@ -9,10 +9,8 @@ function deleteImage(id, path) {
     customConfirm.innerHTML = `
         <div class="confirm-message">确定删除这张图片吗？</div>
         <div class="confirm-buttons">
-        <div class="button-container">
-            <button id="confirm-delete" class="confirm-button confirm-button-yes">确认</button>
-            <button id="cancel-delete" class="confirm-button confirm-button-no">取消</button>
-        </div>
+            <button id="confirm-delete" class="confirm-buttons-x">确认</button>
+            <button id="cancel-delete" class="confirm-buttons-x">取消</button>
         </div>
     `;
     document.body.appendChild(customConfirm);
@@ -81,8 +79,6 @@ function deleteImage(id, path) {
         document.getElementById('cancel-delete').removeEventListener('click', cancelDeleteHandler);
     });
 }
-
-
 
 function copyUrl(url) {
     navigator.clipboard.writeText(url).then(function() {
