@@ -9,8 +9,8 @@ function deleteImage(id, path) {
     customConfirm.innerHTML = `
         <div class="confirm-message">确定删除这张图片吗？</div>
         <div class="confirm-buttons">
-            <button id="confirm-delete" class="confirm-buttons-x">确认</button>
-            <button id="cancel-delete" class="confirm-buttons-x">取消</button>
+            <button id="confirm-delete" class="confirm-buttons-yes">确认</button>
+            <button id="cancel-delete" class="confirm-buttons-no">取消</button>
         </div>
     `;
     document.body.appendChild(customConfirm);
