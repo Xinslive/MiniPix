@@ -41,6 +41,7 @@ body {
     }
 }
 .gallery,
+.custom-confirm,
 .floating-link,
 .top-link,
 .page-link {
@@ -51,53 +52,10 @@ body {
 }
 
 .custom-confirm {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.28);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -30%);
-    padding: 20px;
-    border-radius: 10px;
-    z-index: 30;
-    animation: fadeshowt .4s forwards;
-    text-align: center;
-}
-
-.confirm-message {
-    padding: 15px;
-    margin-bottom: 20px;
-    color: #212121;
-    font-size: 24px;
-}
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    gap: 34px;
-}
-
-.confirm-button {
-    border: none;
-    cursor: pointer;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    color: #212121;
-    background-color: transparent;
-}
-
-.confirm-button-yes:hover {
-    background-color: #FF4500;
-}
-
-.confirm-button-no:hover {
-    background-color: #4CAF50;
 }
 
 .gallery {
@@ -249,7 +207,15 @@ button:hover {
         transform: translateX(100%);
     }
 }
-
+.custom-confirm {
+    position: fixed;
+    top: 30%;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 10px;
+    z-index: 30;
+    animation: fadeshowt .4s forwards;
+}
 .fade-out {
     animation: fadeOut 0.4s ease-out forwards;
 }
@@ -270,6 +236,22 @@ button:hover {
     to {
         opacity: 0;
     }
+}
+
+.confirm-message {
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #FF0000;
+    font-size: 24px;
+}
+.confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.confirm-buttons-x {
+    color: #212121;
 }
 
 button {
