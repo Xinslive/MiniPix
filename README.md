@@ -55,6 +55,7 @@ location ~* /config\.ini$ {
 }
 ```
 ### **图片合规检测**
+我认为自用还弄合规检查时没有必要的，只会拖延图片处理速度，请谨慎开启。
 #### **使用ModerateContent**
 ModerateContent提供免费的NSFW检测API。你可以在validate.php中添加对ModerateContent的请求。
 ```
