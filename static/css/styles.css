@@ -22,7 +22,7 @@ body {
     margin: 0;
     color: #000;
     padding: 20px 30px;
-    background: url(https://dev.yeuer.com/upload/2024/07/01/696852.webp) no-repeat 100% 100%;
+    background: url(/static/backcloth.webp) no-repeat 100% 100%;
     background-size: cover;
     background-attachment: fixed;
     -webkit-tap-highlight-color: transparent;
