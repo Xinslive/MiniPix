@@ -22,7 +22,7 @@ function deleteImage(id, path) {
         }, 500); // 动画持续时间
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'del.php', true);
+        xhr.open('POST', '../del.php', true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.onload = function() {
             if (xhr.status >= 200 && xhr.status < 400) {
