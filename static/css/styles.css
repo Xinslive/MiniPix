@@ -73,6 +73,7 @@ nav,
     align-items: center;
     width: 100%;
     max-width: 500px;
+    margin-top: 45px;
 }
 
 #deleteImageButton {
@@ -231,12 +232,13 @@ nav,
 }
 
 @media (max-width: 767px) {
-    .double-column-layout>div {
-        flex-basis: 100%;
+    .double-column-layout {
+        display: none;
+        visibility: hidden;
+        height: 0;
     }
 }
 
-/*消息弹窗样式*/
 .copy-success {
     position: fixed;
     top: 0;
