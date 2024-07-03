@@ -17,6 +17,29 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
+#cursor {
+    position: fixed;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 25px;
+    opacity: .25;
+    z-index: 10086;
+    pointer-events: none;
+    transition: .2s ease-in-out;
+    transition-property: background, opacity, transform;
+}
+
+#cursor.hidden {
+    opacity: 0;
+}
+
+#cursor.active {
+    opacity: .5;
+    transform: scale(.5);
+}
+
+
 @media screen and (max-width: 1000px) {
     .gallery {
         column-count: 4 !important;
