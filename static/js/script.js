@@ -141,7 +141,7 @@ document.getElementById('deleteImageButton').addEventListener('click', function(
     const imageUrlValue = imageUrl.value;
     if (imageUrlValue) {
         const pathToDelete = getPathFromUrl(imageUrlValue);
-        fetch('del.php', {
+        fetch('./admin/del.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
