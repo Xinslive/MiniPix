@@ -5,7 +5,7 @@
     user-select: none;
 }
 body {
-	background: url(https://dev.yeuer.com/upload/2024/07/01/696852.webp) no-repeat 100% 100%;
+	background: url(/static/background.webp) no-repeat 100% 100%;
 	background-size: cover;
 	background-attachment:fixed;
     margin: 0;
