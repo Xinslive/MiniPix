@@ -171,7 +171,7 @@ try {
         $finalFilePath = $newFilePath;
 
         if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
-            logMessage("文件上传成功: $newFilePath");
+            logMessage("文件接收成功: $newFilePath");
             ini_set('memory_limit', '1024M');
             set_time_limit(300);
             $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 60;
@@ -270,7 +270,7 @@ if ($storage === 'oss') {
         respondAndExit(['result' => 'error', 'code' => 500, 'message' => '文件上传到OSS失败: ' . $e->getMessage()]);
     }
 } else if ($storage === 'local') {
-    logMessage("文件存储在本地: $finalFilePath");
+    logMessage("文件存储在本地");
     $fileUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
     $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
     $storageType = 'local';
