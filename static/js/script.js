@@ -17,6 +17,7 @@ const pasteOrUrlInput = document.getElementById('pasteOrUrlInput');
 const token = '1c17b11693cb5ec63859b091c5b9c1b2';
 const deleteImageButton = document.getElementById('deleteImageButton');
 const deleteButtonWrapper = document.getElementById('deleteButtonWrapper');
+const imageUploadBox = document.getElementById('imageUploadBox');
 
 qualityInput.addEventListener('input', () => {
     qualityOutput.textContent = qualityInput.value;
@@ -217,4 +218,22 @@ document.querySelectorAll('.copy-indicator').forEach(item => {
                 }, 1000);
             });
     });
+});
+
+imageUploadBox.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    imageUploadBox.style.border = '2px dashed blue';
+});
+
+imageUploadBox.addEventListener('dragleave', () => {
+    imageUploadBox.style.border = '2px dashed #ccc';
+});
+
+imageUploadBox.addEventListener('drop', (event) => {
+    event.preventDefault();
+    imageUploadBox.style.border = '2px dashed #ccc';
+    const file = event.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+        handleFile(file);
+    }
 });
