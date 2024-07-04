@@ -69,13 +69,13 @@ function renderImages($mysqli, $items_per_page, $offset) {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             echo '<div class="gallery-item" id="image-' . $row['id'] . '">';
-            echo '<img src="' . $row['url'] . '" alt="Image">';
+            echo '<a href="' . $row['url'] . '" class="glightbox"><img src="' . $row['url'] . '" alt="Image-' . $row['id'] . '"></a>';
             echo '<button class="delete-btn" data-id="' . $row['id'] . '" data-path="' . $row['path'] . '"><img src="/static/svg/xmark.svg" alt="X" /></button>';
-            echo '<button class="copy-btn" data-url="' . $row['url'] . '"><img src="/static/svg/link.svg" alt="Copy" /></button>';
+            echo '<button class="copy-btn" data-url="' . $row['url'] . '"><img  src="/static/svg/link.svg" alt="Copy" /></button>';
             echo '</div>';
         }
     } else {
-        echo '啥也没有';
+        echo '啥也没有，还不快点上传？';
     }
 }
 
@@ -148,15 +148,20 @@ $offset = ($current_page - 1) * $items_per_page;
     <title>后台</title>
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/glightbox.min.css">
 </head>
 <body>
     <div id="gallery" class="gallery">
-        <?php renderImages($mysqli, $items_per_page, $offset); ?>
+    <?php renderImages($mysqli, $items_per_page, $offset); ?>
     </div>
     <?php renderPagination($mysqli, $items_per_page, $current_page); ?>
     <a href="/" class="floating-link"><img src="/static/svg/home.svg" alt="🏠" style="width:30px;height:30px;"></a>
     <a class="top-link" id="scroll-to-top"><img src="/static/svg/top.svg" alt="⬆️" /></a>
     <script type="text/javascript" src="/static/js/admin.js"></script>
     <script type="text/javascript" src="/static/js/cursor.js"></script>
+    <script type="text/javascript" src="/static/js/glightbox.min.js"></script>
+    <script>
+        const lightbox = GLightbox();
+    </script>
 </body>
 </html>
