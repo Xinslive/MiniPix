@@ -71,7 +71,7 @@ function renderImages($mysqli, $items_per_page, $offset) {
             echo '<div class="gallery-item" id="image-' . $row['id'] . '">';
             echo '<a href="' . $row['url'] . '" class="glightbox"><img src="' . $row['url'] . '" alt="Image-' . $row['id'] . '"></a>';
             echo '<button class="delete-btn" data-id="' . $row['id'] . '" data-path="' . $row['path'] . '"><img src="/static/svg/xmark.svg" alt="X" /></button>';
-            echo '<button class="copy-btn" data-url="' . $row['url'] . '"><img  src="/static/svg/link.svg" alt="Copy" /></button>';
+            echo '<button class="copy-btn" data-url="' . $row['url'] . '"><img src="/static/svg/link.svg" alt="Copy" /></button>';
             echo '</div>';
         }
     } else {
