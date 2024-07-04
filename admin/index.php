@@ -38,7 +38,6 @@ if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
     </head>
     <body>
         <div class="login-container">
-            <h2>登录</h2>
             <form method="post" action="">
                 <div class="form-group">
                     <label for="username">账号：</label>
