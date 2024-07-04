@@ -33,12 +33,12 @@ https://dev.yeuer.com/
 
 感谢🙏梦爱吃鱼（blog.bsgun.cn）对本项目的美化！
 
-如果你需要**本地储存图片**，可在安装后修改 config.ini 文件中的 storage 参数为 local
+如果你需要**本地储存图片**，可在安装后修改 ./static/config.ini 文件中的 storage 参数为 local
 ```
 storage = local
 ```
 ## **安装教程**
-首先下载源码ZIP，将文件上传到网站根目录，访问  网址/install.php  ，填写相关信息，即可完成安装。
+首先下载源码ZIP，将文件上传到网站根目录，直接访问你的网址，填写相关信息，即可完成安装。
 ## **运行环境**
 推荐PHP 8.1 + MySQL 5.7
 
@@ -87,7 +87,8 @@ if ($uploadCheck !== true) {
 }
 ?>
 ```
-
+### **修改后台地址**
+直接修改 admin 目录名即可
 
 ## **拓展功能**
 
