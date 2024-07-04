@@ -55,7 +55,7 @@ location ~* /config\.ini$ {
 }
 ```
 ### **上传限制**
-编辑 validate.php 文件，根据注释修改参数。
+编辑 vendor/validate.php 文件，根据注释修改参数。
 ```
 <?php
 session_start();
@@ -67,7 +67,7 @@ function isUploadAllowed() {
     }
 
     // 上传频率限制
-    $timeLimit = 5; // 5秒
+    $timeLimit = 3; // 3秒
     if (isset($_SESSION['last_upload_time'])) {
         $lastUploadTime = $_SESSION['last_upload_time'];
         if (time() - $lastUploadTime < $timeLimit) {
@@ -102,7 +102,7 @@ default_uploader = "easyimage"
 
 [uploaders.easyimage]
 request_url = "https://xxx.xxx.xxx/api.php"
-token = "xxxxxxxxxxxxxxxxxxxxx"
+token = "1c17b11693cb5ec63859b091c5b9c1b2"
 
 ```
 
