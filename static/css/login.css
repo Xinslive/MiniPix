@@ -4,10 +4,11 @@
     -ms-user-select: none;
     user-select: none;
 }
+
 body {
-	background: url(/static/background.webp) no-repeat 100% 100%;
-	background-size: cover;
-	background-attachment:fixed;
+    background: url(/static/background.webp) no-repeat 100% 100%;
+    background-size: cover;
+    background-attachment: fixed;
     margin: 0;
     padding: 0;
     display: flex;
@@ -15,18 +16,19 @@ body {
     align-items: center;
     height: 100vh;
     -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
 }
-/*鼠标小圆点*/
+
 #cursor {
     position: fixed;
     width: 16px;
     height: 16px;
     background: #fff;
     border-radius: 25px;
-    opacity: .25;
+    opacity: 0.25;
     z-index: 10086;
     pointer-events: none;
-    transition: .2s ease-in-out;
+    transition: 0.2s ease-in-out;
     transition-property: background, opacity, transform;
 }
 
@@ -35,8 +37,8 @@ body {
 }
 
 #cursor.active {
-    opacity: .5;
-    transform: scale(.5);
+    opacity: 0.5;
+    transform: scale(0.5);
 }
 
 .login-container {
@@ -49,15 +51,22 @@ body {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
+
 .form-group {
     margin-bottom: 15px;
     text-align: left;
 }
+
 .form-group label {
     display: block;
     margin-bottom: 5px;
 }
+
 .form-group input {
     width: calc(100% - 20px);
     padding: 10px;
@@ -68,11 +77,12 @@ body {
     background-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 button {
     border-radius: 8px;
     border: 1px solid transparent;
     padding: 0.6em 1.2em;
-    color: #eee;
+    color: #212121;
     transition: 0.2s;
     background-color: rgba(255, 255, 255, 0.2);
 }
@@ -84,12 +94,19 @@ button:hover {
 }
 
 button:active {
-  box-shadow: 0px 0px 17px -7px #976cff;
-  border-color: #976cff;
-  transform: scale(0.95);
+    box-shadow: 0px 0px 17px -7px #976cff;
+    border-color: #976cff;
+    transform: scale(0.95);
 }
 
 .error-message {
     color: red;
     margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        width: 80%;
+        padding: 10px;
+    }
 }
