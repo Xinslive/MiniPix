@@ -2,10 +2,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-if (file_exists('./admin/install.lock')) {
+if (file_exists('./static/install.lock')) {
     echo '
     <!DOCTYPE html>
-    <html lang="en">
+    <html>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,8 +18,10 @@ if (file_exists('./admin/install.lock')) {
                 align-items: center;
                 height: 100vh;
                 margin: 0;
-                background-color: #f0f0f0;
-                font-family: Arial, sans-serif;
+                background: url(/static/background.webp) no-repeat 100% 100%;
+                background-size: cover;
+                background-attachment: fixed;
+                -webkit-tap-highlight-color: transparent;
             }
             .message-box {
                 max-width: 600px;
@@ -28,23 +30,34 @@ if (file_exists('./admin/install.lock')) {
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
                 border-radius: 5px;
                 text-align: center;
+                background-color: rgba(255, 255, 255, 0.4);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
             }
             .message-box h1 {
                 color: #a94442;
                 font-size: 24px;
                 margin-bottom: 10px;
             }
-            .message-box p {
-                color: #666;
+            .go-home-button {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
                 font-size: 18px;
-                margin-bottom: 20px;
+                transition: background-color 0.3s;
+            }
+            .go-home-button:hover {
+                background-color: #45a049;
             }
         </style>
     </head>
     <body>
         <div class="message-box">
             <h1>系统已经安装成功</h1>
-            <p>如需重新安装，请删除./admin/install.lock文件。</p>
+            <a href="/" class="go-home-button">返回首页</a>
         </div>
     </body>
     </html>
@@ -70,8 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($mysql as $key => $value) {
             $configContent .= "$key = $value\n";
         }
-        file_put_contents('./admin/config.ini', $configContent);
-        chmod('./admin/config.ini', 0777);
+        file_put_contents('./static/config.ini', $configContent);
+        chmod('./static/config.ini', 0777);
 
         $mysqli = new mysqli($mysql['dbHost'], $mysql['dbUser'], $mysql['dbPass'], $mysql['dbName']);
         if ($mysqli->connect_error) {
@@ -113,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'storage' => 'oss'
         ];
 
-        $configContent = file_get_contents('./admin/config.ini');
+        $configContent = file_get_contents('./static/config.ini');
         $configContent .= "\n[OSS]\n";
         foreach ($oss as $key => $value) {
             $configContent .= "$key = $value\n";
@@ -122,10 +135,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($token as $key => $value) {
             $configContent .= "$key = $value\n";
         }
-        file_put_contents('./admin/config.ini', $configContent);
-        chmod('./admin/config.ini', 0600);
+        file_put_contents('./static/config.ini', $configContent);
+        chmod('./static/config.ini', 0600);
 
-        file_put_contents('./admin/install.lock', '安装锁');
+        file_put_contents('./static/install.lock', '安装锁');
         header('Location: install.php?step=4');
         exit;
     }
@@ -148,6 +161,10 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    background: url(/static/background.webp) no-repeat 100% 100%;
+    background-size: cover;
+    background-attachment: fixed;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .container {
@@ -156,7 +173,10 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 600px;
+    max-width: 450px;
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .container h2 {
@@ -167,36 +187,41 @@ body {
 
 .form-group {
     margin-bottom: 15px;
+    text-align: left;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 5px;
-    color: #666;
 }
 
 .form-group input {
-    width: 100%;
+    width: calc(100% - 20px);
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+    outline: 0;
+    color: #e9ffe1;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-group input[type="submit"] {
+    width: 100%;
+    padding: 10px;
     background-color: #5cb85c;
     color: white;
     border: none;
     cursor: pointer;
     font-size: 16px;
-    border-radius: 4px;
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
 }
 
 .form-group input[type="submit"]:hover {
     background-color: #4cae4c;
 }
-
 .error {
     color: red;
     text-align: center;
@@ -285,6 +310,7 @@ div form .form-group input[type="submit"] {
                     <label for="oss_cdndomain">OSS CDN 域名</label>
                     <input type="text" id="oss_cdndomain" name="oss_cdndomain" value="oss-cdn.your-domain.com" required>
                 </div>
+                <a>提示：如果选择本地储存图片，那上面的信息全部随便填就行</a>
                 <div class="form-group">
                     <input type="submit" value="完成安装">
                 </div>

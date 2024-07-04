@@ -17,6 +17,7 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
+/*鼠标小圆点*/
 #cursor {
     position: fixed;
     width: 16px;
@@ -38,7 +39,6 @@ body {
     opacity: .5;
     transform: scale(.5);
 }
-
 
 @media screen and (max-width: 1000px) {
     .gallery {
@@ -299,3 +299,11 @@ button {
 ::-webkit-scrollbar {
     width: 0;
 }
+
+
+@media only screen and (max-width: 700px){
+    .modal-content {
+        width: 100%;
+    }
+}
+

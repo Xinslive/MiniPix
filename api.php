@@ -4,7 +4,7 @@ require_once 'vendor/autoload.php';
 use OSS\OssClient;
 use OSS\Core\OssException;
 
-$config = parse_ini_file('./admin/config.ini');
+$config = parse_ini_file('./static/config.ini');
 $accessKeyId = $config['accessKeyId'];
 $accessKeySecret = $config['accessKeySecret'];
 $endpoint = $config['endpoint'];
@@ -125,7 +125,7 @@ try {
         if (!isValidToken($token)) {
             respondAndExit(['result' => 'error', 'code' => 403, 'message' => 'Token错误']);
         }
-        $uploadDir = 'upload/';
+        $uploadDir = 'uploads/';
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/octet-stream'];
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $fileMimeType = finfo_file($finfo, $_FILES['image']['tmp_name']);
@@ -171,7 +171,7 @@ try {
         $finalFilePath = $newFilePath;
 
         if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
-            logMessage("文件接收成功: $newFilePath");
+            logMessage("接收文件成功: $newFilePath");
             ini_set('memory_limit', '1024M');
             set_time_limit(300);
             $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 60;

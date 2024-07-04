@@ -19,10 +19,10 @@ function deleteImage(id, path) {
         customConfirm.classList.add('fade-out');
         setTimeout(function() {
             customConfirm.parentNode.removeChild(customConfirm);
-        }, 500); // 动画持续时间
+        }, 500);
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'del.php', true);
+        xhr.open('POST', '../vendor/del.php', true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.onload = function() {
             if (xhr.status >= 200 && xhr.status < 400) {
@@ -63,7 +63,6 @@ function deleteImage(id, path) {
         };
         xhr.send('path=' + encodeURIComponent(path));
 
-        // 移除事件监听器以避免重复绑定
         document.getElementById('confirm-delete').removeEventListener('click', confirmDeleteHandler);
         document.getElementById('cancel-delete').removeEventListener('click', cancelDeleteHandler);
     });
@@ -72,9 +71,8 @@ function deleteImage(id, path) {
         customConfirm.classList.add('fade-out');
         setTimeout(function() {
             customConfirm.parentNode.removeChild(customConfirm);
-        }, 500); // 动画持续时间
+        }, 500);
 
-        // 移除事件监听器以避免重复绑定
         document.getElementById('confirm-delete').removeEventListener('click', confirmDeleteHandler);
         document.getElementById('cancel-delete').removeEventListener('click', cancelDeleteHandler);
     });
