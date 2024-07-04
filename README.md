@@ -33,7 +33,7 @@ https://dev.yeuer.com/
 
 感谢🙏梦爱吃鱼（blog.bsgun.cn）对本项目的美化！
 
-如果你需要本地储存图片，请安装后修改config.ini文件
+如果你需要本地储存图片，可在安装后修改 config.ini 文件中的 storage 参数为 local
 ```
 storage = local
 ```
