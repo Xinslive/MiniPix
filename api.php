@@ -1,5 +1,5 @@
 <?php
-include 'validate.php';
+include 'vendor/validate.php';
 require_once 'vendor/autoload.php';
 use OSS\OssClient;
 use OSS\Core\OssException;
@@ -23,7 +23,7 @@ if ($mysqli->connect_error) {
 }
 
 function logMessage($message) {
-    $logFile = 'process_log.txt';
+    $logFile = 'vendor/process_log.txt';
     $currentTime = date('Y-m-d H:i:s');
     $logMessage = "[$currentTime] $message" . PHP_EOL;
     file_put_contents($logFile, $logMessage, FILE_APPEND);
