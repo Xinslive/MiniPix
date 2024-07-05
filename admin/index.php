@@ -108,20 +108,20 @@ function renderPagination($mysqli, $items_per_page, $current_page) {
                     echo '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '" data-page="' . $i . '">' . $i . '</a> ';
                 }
                 if ($total_pages > $max_links) {
-                    echo '... <a class="page-link" href="?page=' . $total_pages . '" data-page="' . $total_pages . '">' . $total_pages . '</a> ';
+                    echo '<a class="page-link">...</a> <a class="page-link" href="?page=' . $total_pages . '" data-page="' . $total_pages . '">' . $total_pages . '</a> ';
                 }
             } elseif ($current_page > $total_pages - $half_max_links) {
-                echo '<a class="page-link" href="?page=1" data-page="1">1</a> ... ';
+                echo '<a class="page-link" href="?page=1" data-page="1">1</a> <a class="page-link">...</a> ';
                 for ($i = $total_pages - $max_links + 2; $i <= $total_pages; $i++) {
                     echo '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '" data-page="' . $i . '">' . $i . '</a> ';
                 }
             } else {
-                echo '<a class="page-link" href="?page=1" data-page="1">1</a> ... ';
+                echo '<a class="page-link" href="?page=1" data-page="1">1</a> <a class="page-link">...</a> ';
                 for ($i = $current_page - $half_max_links + 1; $i <= $current_page + $half_max_links - 1; $i++) {
                     echo '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '" data-page="' . $i . '">' . $i . '</a> ';
                 }
                 if ($total_pages > $max_links) {
-                    echo '... <a class="page-link" href="?page=' . $total_pages . '" data-page="' . $total_pages . '">' . $total_pages . '</a> ';
+                    echo '<a class="page-link">...</a> <a class="page-link" href="?page=' . $total_pages . '" data-page="' . $total_pages . '">' . $total_pages . '</a> ';
                 }
             }
         }
