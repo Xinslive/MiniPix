@@ -40,7 +40,9 @@ function deleteImage(id, path) {
                     }, 1500);
                     var imageElement = document.getElementById('image-' + id);
                     if (imageElement) {
-                        imageElement.parentNode.removeChild(imageElement);
+                        setTimeout(function() {
+                            imageElement.parentNode.removeChild(imageElement);
+                        }, 300);
                     }
                 } else {
                     var notification = document.createElement('div');
