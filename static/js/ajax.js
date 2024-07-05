@@ -30,9 +30,10 @@ function loadPage(page) {
                 response.images.forEach(image => {
                     const imageContainer = document.createElement('div');
                     imageContainer.classList.add('gallery-item');
+                    imageContainer.id = `image-${image.id}`;
                     imageContainer.innerHTML = `
                         <a href="${image.url}" class="glightbox">
-                            <img src="${image.url}" alt="Image" class="lazy-image" onerror="this.onerror=null;this.src='/static/svg/404.svg';" onclick="zoomImage(this)">
+                            <img src="${image.url}" alt="Image"">
                         </a>
                         <button class="delete-btn" data-id="${image.id}" data-path="${image.path}"><img src="/static/svg/xmark.svg" alt="X" /></button>
                         <button class="copy-btn" data-url="${image.url}"><img  src="/static/svg/link.svg" alt="Copy" /></button>
@@ -51,6 +52,7 @@ function loadPage(page) {
     };
     xhr.send();
 }
+
 
 document.getElementById('scroll-to-top').addEventListener('click', function(e) {
     e.preventDefault();
