@@ -36,7 +36,7 @@ function deleteImage(id, path) {
                         notification.classList.add('message-right');
                         setTimeout(function() {
                             notification.parentNode.removeChild(notification);
-                        }, 1000);
+                        });
                     }, 1500);
                     var imageElement = document.getElementById('image-' + id);
                     if (imageElement) {
@@ -51,7 +51,7 @@ function deleteImage(id, path) {
                         notification.classList.add('message-right');
                         setTimeout(function() {
                             notification.parentNode.removeChild(notification);
-                        }, 1000);
+                        });
                     }, 1500);
                 }
             } else {
@@ -77,6 +77,7 @@ function deleteImage(id, path) {
         document.getElementById('cancel-delete').removeEventListener('click', cancelDeleteHandler);
     });
 }
+
 
 function copyUrl(url) {
     navigator.clipboard.writeText(url).then(function() {
