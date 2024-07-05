@@ -11,9 +11,9 @@
 
 注：本程序只适合个人自用。
 ## **演示站点**
-首页：https://minipix.pro/
+首页：MiniPix.Pro/
 
-后台：https://minipix.pro/admin
+后台：MiniPix.Pro/admin
 
 ## **项目简介**
 本项目由几个简单的文件组成。采用简单高效的方式进行图片压缩，支持自定义压缩率和尺寸。
