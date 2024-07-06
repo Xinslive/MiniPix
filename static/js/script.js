@@ -169,6 +169,10 @@ document.getElementById('deleteImageButton').addEventListener('click', function(
                     }, 1500);
                     document.getElementById('imagePreview').src = 'static/svg/up.svg';
                     document.getElementById('deleteImageButton').style.display = 'none';
+                    var inputsToClear = document.querySelectorAll('#urlOutput input');
+                    inputsToClear.forEach(function(input) {
+                    input.value = '';
+                    });
                 } else {
                     var notification = document.createElement('div');
                     notification.textContent = data.message;
