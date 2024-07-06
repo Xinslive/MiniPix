@@ -8,8 +8,8 @@ if (!file_exists('static/install.lock')) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>MiniPix 轻量图床</title>
-	<meta name="keywords" content="图床程序,高效图片压缩,前端后台设计,图片上传,WEBP转换,阿里云OSS,本地存储,多格式支持,瀑布流管理,图片管理后台,自定义压缩率,尺寸限制">
-	<meta name="description" content="一款专为个人需求设计的高效图床解决方案，集成了强大的图片压缩功能与优雅的前台后台界面。项目结构精简高效，提供自定义图片压缩率与尺寸设置，有效降低存储与带宽成本。支持JPEG, PNG, GIF转换为WEBP以及SVG、WEBP直接上传，搭载阿里云OSS存储（默认）及灵活的本地存储选项。特性包括点击、拖拽、粘贴及URL本地化上传方式，以及配备瀑布流布局的管理后台，实现图片轻松管理与预览。完全可自定制的体验，满足不同用户对图片管理和优化的高级需求。">
+    <meta name="keywords" content="图床程序,高效图片压缩,前端后台设计,图片上传,WEBP转换,阿里云OSS,本地存储,多格式支持,瀑布流管理,图片管理后台,自定义压缩率,尺寸限制">
+    <meta name="description" content="一款专为个人需求设计的高效图床解决方案，集成了强大的图片压缩功能与优雅的前台后台界面。项目结构精简高效，提供自定义图片压缩率与尺寸设置，有效降低存储与带宽成本。支持JPEG, PNG, GIF转换为WEBP以及SVG、WEBP直接上传，搭载阿里云OSS存储（默认）及灵活的本地存储选项。特性包括点击、拖拽、粘贴及URL本地化上传方式，以及配备瀑布流布局的管理后台，实现图片轻松管理与预览。完全可自定制的体验，满足不同用户对图片管理和优化的高级需求。">
 	<link rel="shortcut icon" href="static/favicon.ico">
 	<link rel="stylesheet" type="text/css" href="static/css/styles.css">
 </head>
@@ -40,6 +40,7 @@ if (!file_exists('static/install.lock')) {
 			<input type="text" class="copy-indicator" id="markdownUrl" readonly placeholder="Markdown代码">
 			<input type="text" class="copy-indicator" id="markdownLinkUrl" readonly placeholder="Markdown链接代码">
 			<input type="text" class="copy-indicator" id="htmlUrl" readonly placeholder="HTML代码">
+			<input type="text" class="hidden-input" id="imagePath" placeholder="保存路径">
 		</div>
 		<div id="imageInfo" class="double-column-layout">
 			<div>
@@ -59,6 +60,10 @@ if (!file_exists('static/install.lock')) {
 				</div>
 			</div>
 		</div>
+	   <footer class="footer-nav">
+		<button class="logo-btn">站点声明</button>
+		 <em class="logotitle">本站不保证内容，时效和稳定性，请勿上传包含危害国家安全和民族团结、侵犯他人权益、欺骗性质、色情或暴力的图片。严格遵守国家相关法律法规，尊重版权、著作权等权利；图片内容均由「网友」自行上传，所有图片作用、性质都与本站无关，本站对所有图片合法性概不负责，亦不承担任何法律责任；</em>
+	   </footer>
 <script type="text/javascript" src="static/js/script.js"></script>
 <script type="text/javascript" src="static/js/cursor.js"></script>
 </body>
