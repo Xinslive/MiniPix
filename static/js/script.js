@@ -7,6 +7,7 @@ const progressContainer = document.getElementById('progressContainer');
 const uploadButton = document.getElementById('uploadButton');
 const urlOutput = document.getElementById('urlOutput');
 const imageUrl = document.getElementById('imageUrl');
+const imagePath = document.getElementById('imagePath');
 const originalWidth = document.getElementById('originalWidth');
 const originalHeight = document.getElementById('originalHeight');
 const originalSize = document.getElementById('originalSize');
@@ -105,17 +106,14 @@ function uploadImage(file) {
                 const response = JSON.parse(xhr.responseText);
                 if (response.url) {
                     imageUrl.value = response.url;
-                    let imageName = response.url.split('/').pop();
-                    if (imageName.includes('?')) {
-                        imageName = imageName.split('?')[0];
-                    }
+                    imagePath.value = response.path;
                     if (response.width && response.height && response.size) {
                         compressedWidth.textContent = response.width;
                         compressedHeight.textContent = response.height;
                         compressedSize.textContent = (response.size / 1024).toFixed(2);
-                        document.getElementById('htmlUrl').value = `<img src="${response.url}" alt="${imageName}">`;
-                        document.getElementById('markdownUrl').value = `![${imageName}](${response.url})`;
-                        document.getElementById('markdownLinkUrl').value = `[![${imageName}](${response.url})](${response.url})`;
+                        document.getElementById('htmlUrl').value = `<img src="${response.url}" alt="${response.srcName}">`;
+                        document.getElementById('markdownUrl').value = `![${response.srcName}](${response.url})`;
+                        document.getElementById('markdownLinkUrl').value = `[![${response.srcName}](${response.url})](${response.url})`;
                         deleteImageButton.style.display = 'block';
                         urlOutput.style.display = 'block';
                     } else {
@@ -139,15 +137,14 @@ function uploadImage(file) {
 
 document.getElementById('deleteImageButton').addEventListener('click', function(event) {
     event.stopPropagation();
-    const imageUrlValue = imageUrl.value;
-    if (imageUrlValue) {
-        const pathToDelete = getPathFromUrl(imageUrlValue);
+    const Path = imagePath.value;
+    if (Path) {
         fetch('./vendor/del.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `path=${encodeURIComponent(pathToDelete)}`,
+            body: `path=${encodeURIComponent(Path)}`,
         })
         .then((response) => {
             if (!response.ok) {
