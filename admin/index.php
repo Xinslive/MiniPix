@@ -41,11 +41,11 @@ if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
             <form method="post" action="">
                 <div class="form-group">
                     <label for="username">账号：</label>
-                    <input type="text" id="username" name="username" required>
+                    <input type="text" id="username" name="username" value="admin" required>
                 </div>
                 <div class="form-group">
                     <label for="password">密码：</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" value="123456" required>
                 </div>
                 <div class="action-buttons">
                     <button type="submit" name="login">登录</button>
@@ -88,7 +88,7 @@ function renderPagination($mysqli, $items_per_page, $current_page) {
         die("查询错误：" . $mysqli->error);
     }
 
-    $max_links = 7;
+    $max_links = 4;
     $half_max_links = floor($max_links / 2);
     $pagination = '';
 
@@ -108,20 +108,20 @@ function renderPagination($mysqli, $items_per_page, $current_page) {
                     $pagination .= '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '" data-page="' . $i . '">' . $i . '</a> ';
                 }
                 if ($total_pages > $max_links) {
-                    $pagination .= '<a class="page-link">...</a> <a class="page-link" href="?page=' . $total_pages . '" data-page="' . $total_pages . '">' . $total_pages . '</a> ';
+                    $pagination .= '<a class="page-link" href="?page=' . $total_pages . '" data-page="' . $total_pages . '">' . $total_pages . '</a> ';
                 }
             } elseif ($current_page > $total_pages - $half_max_links) {
-                $pagination .= '<a class="page-link" href="?page=1" data-page="1">1</a> <a class="page-link">...</a> ';
+                $pagination .= '<a class="page-link" href="?page=1" data-page="1">1</a> ';
                 for ($i = $total_pages - $max_links + 2; $i <= $total_pages; $i++) {
                     $pagination .= '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '" data-page="' . $i . '">' . $i . '</a> ';
                 }
             } else {
-                $pagination .= '<a class="page-link" href="?page=1" data-page="1">1</a> <a class="page-link">...</a> ';
+                $pagination .= '<a class="page-link" href="?page=1" data-page="1">1</a> ';
                 for ($i = $current_page - $half_max_links + 1; $i <= $current_page + $half_max_links - 1; $i++) {
                     $pagination .= '<a class="page-link' . ($i == $current_page ? ' active' : '') . '" href="?page=' . $i . '" data-page="' . $i . '">' . $i . '</a> ';
                 }
                 if ($total_pages > $max_links) {
-                    $pagination .= '<a class="page-link">...</a> <a class="page-link" href="?page=' . $total_pages . '" data-page="' . $total_pages . '">' . $total_pages . '</a> ';
+                    $pagination .= '<a class="page-link" href="?page=' . $total_pages . '" data-page="' . $total_pages . '">' . $total_pages . '</a> ';
                 }
             }
         }
