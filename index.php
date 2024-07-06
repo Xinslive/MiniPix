@@ -60,10 +60,6 @@ if (!file_exists('static/install.lock')) {
 				</div>
 			</div>
 		</div>
-	   <footer class="footer-nav">
-		<button class="logo-btn">站点声明</button>
-		 <em class="logotitle">本站不保证内容，时效和稳定性，请勿上传包含危害国家安全和民族团结、侵犯他人权益、欺骗性质、色情或暴力的图片。严格遵守国家相关法律法规，尊重版权、著作权等权利；图片内容均由「网友」自行上传，所有图片作用、性质都与本站无关，本站对所有图片合法性概不负责，亦不承担任何法律责任；</em>
-	   </footer>
 <script type="text/javascript" src="static/js/script.js"></script>
 <script type="text/javascript" src="static/js/cursor.js"></script>
 </body>
