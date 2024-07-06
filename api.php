@@ -262,7 +262,6 @@ if ($storage === 'oss') {
             'width' => $compressedWidth,
             'height' => $compressedHeight,
             'size' => $compressedSize,
-            'thumb' => $fileUrl,
             'path' => $ossFilePath
         ]);
     } catch (OssException $e) {
@@ -286,7 +285,6 @@ if ($storage === 'oss') {
         'width' => $compressedWidth,
         'height' => $compressedHeight,
         'size' => $compressedSize,
-        'thumb' => $fileUrl,
         'path' => $finalFilePath
     ]);
 }
