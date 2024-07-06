@@ -41,11 +41,11 @@ if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
             <form method="post" action="">
                 <div class="form-group">
                     <label for="username">账号：</label>
-                    <input type="text" id="username" name="username" value="admin" required>
+                    <input type="text" id="username" name="username" required>
                 </div>
                 <div class="form-group">
                     <label for="password">密码：</label>
-                    <input type="password" id="password" name="password" value="123456" required>
+                    <input type="password" id="password" name="password" required>
                 </div>
                 <div class="action-buttons">
                     <button type="submit" name="login">登录</button>
