@@ -4,7 +4,6 @@ const qualityInput = document.getElementById('qualityInput');
 const qualityOutput = document.getElementById('qualityOutput');
 const progressBar = document.getElementById('progressBar');
 const progressContainer = document.getElementById('progressContainer');
-const uploadButton = document.getElementById('uploadButton');
 const urlOutput = document.getElementById('urlOutput');
 const imageUrl = document.getElementById('imageUrl');
 const imagePath = document.getElementById('imagePath');
