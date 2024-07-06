@@ -294,3 +294,7 @@ nav,
         transform: translateX(100%);
     }
 }
+
+.hidden-input {
+    display: none;
+}
