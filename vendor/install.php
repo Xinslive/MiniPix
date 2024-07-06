@@ -57,7 +57,7 @@ if (file_exists('../static/install.lock')) {
     <body>
         <div class="message-box">
             <h1>系统已经安装成功</h1>
-            <a href="/" class="go-home-button">返回首页</a>
+            <a href="/" class="go-home-button">前往首页</a>
         </div>
     </body>
     </html>
