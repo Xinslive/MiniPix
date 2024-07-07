@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     loadPage(1);
 
-document.getElementById('pagination').addEventListener('click', function(event) {
-    if (event.target.classList.contains('page-link')) {
+    document.getElementById('pagination').addEventListener('click', function(event) {
+        if (event.target.classList.contains('page-link')) {
             event.preventDefault();
-        const page = event.target.getAttribute('data-page');
+            const page = event.target.getAttribute('data-page');
             loadPage(page);
         }
     });
@@ -33,26 +33,28 @@ function loadPage(page) {
                     imageContainer.id = `image-${image.id}`;
                     imageContainer.innerHTML = `
                         <a href="${image.url}" class="glightbox">
-                            <img src="${image.url}" alt="Image"">
+                            <img src="${image.url}" alt="Image">
                         </a>
                         <button class="delete-btn" data-id="${image.id}" data-path="${image.path}"><img src="/static/svg/xmark.svg" alt="X" /></button>
                         <button class="copy-btn" data-url="${image.url}"><img  src="/static/svg/link.svg" alt="Copy" /></button>
                     `;
                     gallery.appendChild(imageContainer);
                 });
-                gallery.style.display = 'block';
-                pagination.innerHTML = response.pagination;
-                lightbox.reload();
-                bindImageActions();
+                setTimeout(() => {
+                    gallery.style.display = 'block';
+                    pagination.innerHTML = response.pagination;
+                    lightbox.reload();
+                    bindImageActions();
+                    loadingIndicator.style.display = 'none';
+                }, 100);
             } else {
                 gallery.style.display = 'none';
+                loadingIndicator.style.display = 'none';
             }
-            loadingIndicator.style.display = 'none';
         }
     };
     xhr.send();
 }
-
 
 document.getElementById('scroll-to-top').addEventListener('click', function(e) {
     e.preventDefault();
