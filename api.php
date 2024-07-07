@@ -1,5 +1,5 @@
 <?php
-include 'vendor/validate.php';
+//include 'vendor/validate.php';
 require_once 'vendor/autoload.php';
 use OSS\OssClient;
 use OSS\Core\OssException;
