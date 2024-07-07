@@ -49,7 +49,9 @@ location ~* /config\.ini$ {
 }
 ```
 ### **上传限制**
-编辑 vendor/validate.php 文件，根据注释修改参数。
+先删除api.php文件第二行的注释符。
+
+再编辑 vendor/validate.php 文件。
 ```
 <?php
 session_start();
