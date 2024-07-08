@@ -35,7 +35,7 @@ storage = local
 ### **版本升级**
 仅保留 uploads 目录 ，其他的全部删除，下载最新版的安装包，完成安装操作，
 ## **运行环境**
-推荐PHP 8.1 + MySQL 5.7
+推荐PHP 8.1 + MySQL 5.7，注意要给网站配置SSL证书。
 
 本程序依赖PHP的 Fileinfo 、 Imagick 拓展，需要自行安装。依赖 pcntl 扩展（宝塔PHP默认已安装）
 
