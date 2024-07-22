@@ -46,17 +46,17 @@ if (!file_exists('static/install.lock')) {
 			<div>
 				<h2>压缩前</h2>
 				<div style="text-align:center;">
-					<p>宽度：<span id="originalWidth"></span> px</p>
-					<p>高度：<span id="originalHeight"></span> px</p>
 					<p>大小：<span id="originalSize"></span> KB</p>
+					<p>宽度：<span id="originalWidth"></span> PX</p>
+					<p>高度：<span id="originalHeight"></span> PX</p>
 				</div>
 			</div>
 			<div>
 				<h2>压缩后</h2>
 				<div style="text-align:center;">
-					<p>宽度：<span id="compressedWidth"></span> px</p>
-					<p>高度：<span id="compressedHeight"></span> px</p>
 					<p>大小：<span id="compressedSize"></span> KB</p>
+					<p>宽度：<span id="compressedWidth"></span> PX</p>
+					<p>高度：<span id="compressedHeight"></span> PX</p>
 				</div>
 			</div>
 		</div>
