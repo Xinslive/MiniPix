@@ -208,7 +208,7 @@ document.querySelectorAll('.copy-indicator').forEach(item => {
             .then(() => {
                 const copiedMsg = document.createElement('div');
                 copiedMsg.className = 'copy-success';
-                copiedMsg.textContent = '图片复制成功';
+                copiedMsg.textContent = '复制成功';
                 document.body.appendChild(copiedMsg);
                 setTimeout(() => {
                     copiedMsg.classList.add('message-right');
