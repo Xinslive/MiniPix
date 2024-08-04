@@ -42,16 +42,38 @@ function isValidToken($token) {
     return $token === $validToken;
 }
 
+function correctImageOrientation($image, $exif) {
+    if (!empty($exif['Orientation'])) {
+        switch ($exif['Orientation']) {
+            case 3:
+                $image = imagerotate($image, 180, 0);
+                break;
+            case 6:
+                $image = imagerotate($image, -90, 0);
+                break;
+            case 8:
+                $image = imagerotate($image, 90, 0);
+                break;
+        }
+    }
+    return $image;
+}
+
 function convertToWebp($source, $destination, $quality = 60) {
     $info = getimagesize($source);
 
     if ($info['mime'] == 'image/jpeg') {
         $image = imagecreatefromjpeg($source);
+        $exif = exif_read_data($source);
+        if ($exif !== false) {
+            $image = correctImageOrientation($image, $exif);
+        }
     } elseif ($info['mime'] == 'image/gif') {
         return false;
     } else {
         return false;
     }
+    
     $width = imagesx($image);
     $height = imagesy($image);
     $maxWidth = 2500;
