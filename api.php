@@ -195,7 +195,7 @@ try {
         if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
             logMessage("接收文件成功: $newFilePath");
             ini_set('memory_limit', '1024M');
-            set_time_limit(300);
+            set_time_limit(11);
             $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 60;
 
             $convertSuccess = true;
