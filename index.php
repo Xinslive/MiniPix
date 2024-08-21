@@ -26,9 +26,9 @@ if (!file_exists('static/install.lock')) {
 				<input type="text" id="pasteOrUrlInput" placeholder="此处可粘贴图像URL或使用Ctrl+V粘贴图片">
 			</div>
 			<div id="parameters">
-				<label for="qualityInput">图片清晰度（60-100）：<output id="qualityOutput">60</output>
+				<label for="qualityInput">压缩质量（60-99）：<output id="qualityOutput">60</output>
 				</label>
-				<input type="range" id="qualityInput" name="quality" min="60" max="100" value="60" step="5">
+				<input type="range" id="qualityInput" name="quality" min="60" max="99" value="60" step="1">
 			</div>
 			<div id="progressContainer">
 				<div id="progressBar"></div>
