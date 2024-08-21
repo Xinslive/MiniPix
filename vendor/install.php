@@ -249,19 +249,19 @@ div form .form-group input[type="submit"] {
                     <div class="error"><?= $error ?></div>
                 <?php endif; ?>
                 <div class="form-group">
-                    <label for="mysql_dbHost">MySQL Host</label>
+                    <label for="mysql_dbHost">MySQL Host 数据库地址</label>
                     <input type="text" id="mysql_dbHost" name="mysql_dbHost" value="127.0.0.1" required>
                 </div>
                 <div class="form-group">
-                    <label for="mysql_dbName">MySQL Database Name</label>
+                    <label for="mysql_dbName">MySQL Database Name 数据库名</label>
                     <input type="text" id="mysql_dbName" name="mysql_dbName" required>
                 </div>
                 <div class="form-group">
-                    <label for="mysql_dbUser">MySQL User</label>
+                    <label for="mysql_dbUser">MySQL User 数据库用户名</label>
                     <input type="text" id="mysql_dbUser" name="mysql_dbUser" required>
                 </div>
                 <div class="form-group">
-                    <label for="mysql_dbPass">MySQL Password</label>
+                    <label for="mysql_dbPass">MySQL Password 数据库密码</label>
                     <input type="password" id="mysql_dbPass" name="mysql_dbPass" required>
                 </div>
                 <div class="form-group">
@@ -290,26 +290,26 @@ div form .form-group input[type="submit"] {
             <form method="POST">
                 <input type="hidden" name="step" value="2">
                 <div class="form-group">
-                    <label for="oss_accessKeyId">OSS Access Key ID</label>
+                    <label for="oss_accessKeyId">阿里云OSS Access Key ID</label>
                     <input type="text" id="oss_accessKeyId" name="oss_accessKeyId" required>
                 </div>
                 <div class="form-group">
-                    <label for="oss_accessKeySecret">OSS Access Key Secret</label>
+                    <label for="oss_accessKeySecret">阿里云OSS Access Key Secret</label>
                     <input type="text" id="oss_accessKeySecret" name="oss_accessKeySecret" required>
                 </div>
                 <div class="form-group">
-                    <label for="oss_endpoint">OSS Endpoint</label>
+                    <label for="oss_endpoint">OSS Endpoint 地域代码</label>
                     <input type="text" id="oss_endpoint" name="oss_endpoint" required>
                 </div>
                 <div class="form-group">
-                    <label for="oss_bucket">OSS Bucket</label>
+                    <label for="oss_bucket">OSS Bucket 储存桶名</label>
                     <input type="text" id="oss_bucket" name="oss_bucket" required>
                 </div>
                 <div class="form-group">
                     <label for="oss_cdndomain">OSS CDN 域名</label>
                     <input type="text" id="oss_cdndomain" name="oss_cdndomain" value="oss-cdn.your-domain.com" required>
                 </div>
-                <a>提示：如果选择本地储存图片，那上面的信息全部随便填就行</a>
+                <a>提示：如欲使用本地储存图片，上方信息随意填写就行！</a>
                 <div class="form-group">
                     <input type="submit" value="完成安装">
                 </div>
