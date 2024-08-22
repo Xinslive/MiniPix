@@ -241,18 +241,26 @@ try {
             pcntl_alarm(0);
 
 if ($fileMimeType !== 'image/svg+xml') {
-    $compressedInfo = getimagesize($finalFilePath);
-    if (!$compressedInfo) {
-        logMessage('无法获取压缩后图片信息');
-        respondAndExit(['result' => 'error', 'code' => 500, 'message' => '无法获取压缩后图片信息']);
+    if ($fileMimeType === 'image/avif') {
+        $image = new Imagick($finalFilePath);
+        $compressedWidth = $image->getImageWidth();
+        $compressedHeight = $image->getImageHeight();
+    } else {
+        $compressedInfo = getimagesize($finalFilePath);
+        if (!$compressedInfo) {
+            logMessage('无法获取压缩后图片信息');
+            respondAndExit(['result' => 'error', 'code' => 500, 'message' => '无法获取压缩后图片信息']);
+        }
+        $compressedWidth = $compressedInfo[0];
+        $compressedHeight = $compressedInfo[1];
     }
-    $compressedWidth = $compressedInfo[0];
-    $compressedHeight = $compressedInfo[1];
 } else {
     $compressedWidth = 100;
     $compressedHeight = 100;
 }
+
 $compressedSize = filesize($finalFilePath);
+
 
 if ($storage === 'oss') {
     try {
