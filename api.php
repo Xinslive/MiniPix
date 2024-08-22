@@ -42,52 +42,64 @@ function isValidToken($token) {
     return $token === $validToken;
 }
 
-function GifToWebp($source, $destination, $quality) {
-    try {
-        $image = new Imagick();
-        $image->readImage($source);
-        $image = $image->coalesceImages();
-        foreach ($image as $frame) {
-            $frame->setImageFormat('webp');
-            $frame->setImageCompressionQuality($quality);
+function correctImageOrientation($image, $exif) {
+    if (!empty($exif['Orientation'])) {
+        switch ($exif['Orientation']) {
+            case 3:
+                $image = imagerotate($image, 180, 0);
+                break;
+            case 6:
+                $image = imagerotate($image, -90, 0);
+                break;
+            case 8:
+                $image = imagerotate($image, 90, 0);
+                break;
         }
-        $image = $image->optimizeImageLayers();
-        $result = $image->writeImages($destination, true);
-        $image->clear();
-        $image->destroy();
-
-        // 返回处理后的图片信息
-        $finalImage = new Imagick($destination);
-        $info = [
-            'width' => $finalImage->getImageWidth(),
-            'height' => $finalImage->getImageHeight(),
-            'size' => filesize($destination),
-        ];
-        $finalImage->clear();
-        $finalImage->destroy();
-        return $info;
-    } catch (Exception $e) {
-        logMessage('GIF转换WebP失败: ' . $e->getMessage());
-        return false;
     }
+    return $image;
 }
 
-function ToAvif($source, $destination, $quality) {
-    try {
-        $effort = intval(($quality - 60) / 10) + 6;
-        if ($effort > 9) $effort = 9;
-        $image = new Imagick($source);
-        $image->setImageFormat('avif');
-        $image->setOption('avif:quality', (string)$quality);
-        $image->setOption('avif:effort', (string)$effort);
-        $image->setOption('avif:chroma-subsampling', '4:4:4');
-        if ($image->getImageAlphaChannel()) {
-            $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
-            $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_SET);
-        } else {
-            $image->setImageBackgroundColor(new ImagickPixel('white'));
-            $image = $image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+function convertToWebp($source, $destination, $quality = 60) {
+    $info = getimagesize($source);
+
+    if ($info['mime'] == 'image/jpeg') {
+        $image = imagecreatefromjpeg($source);
+        $exif = exif_read_data($source);
+        if ($exif !== false) {
+            $image = correctImageOrientation($image, $exif);
         }
+    } elseif ($info['mime'] == 'image/gif') {
+        return false;
+    } else {
+        return false;
+    }
+    
+    $width = imagesx($image);
+    $height = imagesy($image);
+    $maxWidth = 2500;
+    $maxHeight = 1600;
+    if ($width > $maxWidth || $height > $maxHeight) {
+        $ratio = min($maxWidth / $width, $maxHeight / $height);
+        $newWidth = round($width * $ratio);
+        $newHeight = round($height * $ratio);
+        $newImage = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        imagedestroy($image);
+        $image = $newImage;
+    }
+    $result = imagewebp($image, $destination, $quality);
+    imagedestroy($image);
+    gc_collect_cycles();
+    return $result;
+}
+
+function convertPngWithImagick($source, $destination, $quality = 60) {
+    try {
+        $image = new Imagick($source);
+        $image->setImageFormat('webp');
+        $image->setImageCompressionQuality($quality);
+        $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
+        $image = $image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
         $width = $image->getImageWidth();
         $height = $image->getImageHeight();
         $maxWidth = 2500;
@@ -101,17 +113,29 @@ function ToAvif($source, $destination, $quality) {
         $result = $image->writeImage($destination);
         $image->clear();
         $image->destroy();
-        $finalImage = new Imagick($destination);
-        $info = [
-            'width' => $finalImage->getImageWidth(),
-            'height' => $finalImage->getImageHeight(),
-            'size' => filesize($destination),
-        ];
-        $finalImage->clear();
-        $finalImage->destroy();
-        return $info;
+        return $result;
     } catch (Exception $e) {
-        logMessage('AVIF转换失败: ' . $e->getMessage());
+        logMessage('Imagick转换PNG失败: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function convertGifToWebp($source, $destination, $quality = 60) {
+    try {
+        $image = new Imagick();
+        $image->readImage($source);
+        $image = $image->coalesceImages();
+        foreach ($image as $frame) {
+            $frame->setImageFormat('webp');
+            $frame->setImageCompressionQuality($quality);
+        }
+        $image = $image->optimizeImageLayers();
+        $result = $image->writeImages($destination, true);
+        $image->clear();
+        $image->destroy();
+        return $result;
+    } catch (Exception $e) {
+        logMessage('GIF转换WebP失败: ' . $e->getMessage());
         return false;
     }
 }
@@ -162,13 +186,16 @@ try {
         $randomFileName = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
         $newFilePathWithoutExt = $uploadDirWithDatePath . $randomFileName;
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if (empty($extension)) {
+            $extension = 'webp';
+        }
         $newFilePath = $newFilePathWithoutExt . '.' . $extension;
         $finalFilePath = $newFilePath;
 
         if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
             logMessage("接收文件成功: $newFilePath");
             ini_set('memory_limit', '1024M');
-            set_time_limit(11);
+            set_time_limit(60);
             $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 60;
 
             $convertSuccess = true;
@@ -183,20 +210,24 @@ try {
 
             pcntl_alarm($timeout);
 
-            if ($fileMimeType === 'image/gif') {
-                $convertSuccess = GifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+            if ($fileMimeType === 'image/png') {
+                $convertSuccess = convertPngWithImagick($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
                 if ($convertSuccess) {
                     $finalFilePath = $newFilePathWithoutExt . '.webp';
                     unlink($newFilePath);
                 }
-            } elseif ($fileMimeType !== 'image/svg+xml') {
-                $convertSuccess = ToAvif($newFilePath, $newFilePathWithoutExt . '.avif', $quality);
+            } elseif ($fileMimeType === 'image/gif') {
+                $convertSuccess = convertGifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
                 if ($convertSuccess) {
-                    $finalFilePath = $newFilePathWithoutExt . '.avif';
+                    $finalFilePath = $newFilePathWithoutExt . '.webp';
                     unlink($newFilePath);
                 }
-            } else {
-                $finalFilePath = $newFilePath;
+            } elseif ($fileMimeType !== 'image/webp' && $fileMimeType !== 'image/svg+xml') {
+                $convertSuccess = convertToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+                if ($convertSuccess) {
+                    $finalFilePath = $newFilePathWithoutExt . '.webp';
+                    unlink($newFilePath);
+                }
             }
 
             if ($signalReceived) {
@@ -207,27 +238,19 @@ try {
 
             pcntl_alarm(0);
 
-
 if ($fileMimeType !== 'image/svg+xml') {
-    try {
-        $image = new Imagick($finalFilePath);
-        $compressedWidth = $image->getImageWidth();
-        $compressedHeight = $image->getImageHeight();
-        $compressedSize = filesize($finalFilePath);
-
-        if ($compressedWidth === false || $compressedHeight === false) {
-            logMessage('无法获取压缩后图片信息');
-            respondAndExit(['result' => 'error', 'code' => 500, 'message' => '无法获取压缩后图片信息']);
-        }
-    } catch (Exception $e) {
-        logMessage('获取图片信息失败: ' . $e->getMessage());
-        respondAndExit(['result' => 'error', 'code' => 500, 'message' => '获取图片信息失败']);
+    $compressedInfo = getimagesize($finalFilePath);
+    if (!$compressedInfo) {
+        logMessage('无法获取压缩后图片信息');
+        respondAndExit(['result' => 'error', 'code' => 500, 'message' => '无法获取压缩后图片信息']);
     }
+    $compressedWidth = $compressedInfo[0];
+    $compressedHeight = $compressedInfo[1];
 } else {
     $compressedWidth = 100;
     $compressedHeight = 100;
-    $compressedSize = filesize($finalFilePath);
 }
+$compressedSize = filesize($finalFilePath);
 
 if ($storage === 'oss') {
     try {
