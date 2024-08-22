@@ -7,11 +7,7 @@ const progressContainer = document.getElementById('progressContainer');
 const urlOutput = document.getElementById('urlOutput');
 const imageUrl = document.getElementById('imageUrl');
 const imagePath = document.getElementById('imagePath');
-const originalWidth = document.getElementById('originalWidth');
-const originalHeight = document.getElementById('originalHeight');
 const originalSize = document.getElementById('originalSize');
-const compressedWidth = document.getElementById('compressedWidth');
-const compressedHeight = document.getElementById('compressedHeight');
 const compressedSize = document.getElementById('compressedSize');
 const pasteOrUrlInput = document.getElementById('pasteOrUrlInput');
 const token = '1c17b11693cb5ec63859b091c5b9c1b2';
@@ -46,8 +42,6 @@ pasteOrUrlInput.addEventListener('input', () => {
         img.onload = () => {
             imagePreview.src = url;
             imagePreview.style.display = 'block';
-            originalWidth.textContent = img.width;
-            originalHeight.textContent = img.height;
             fetch(url).then(response => response.blob()).then(blob => {
                 originalSize.textContent = (blob.size / 1024).toFixed(2);
                 uploadImage(blob);
@@ -68,14 +62,8 @@ function handleFile(file) {
             imagePreview.style.display = 'block';
         };
         reader.readAsDataURL(file);
-        originalWidth.textContent = '';
-        originalHeight.textContent = '';
         originalSize.textContent = (file.size / 1024).toFixed(2);
         const img = new Image();
-        img.onload = () => {
-            originalWidth.textContent = img.width;
-            originalHeight.textContent = img.height;
-        };
         img.src = URL.createObjectURL(file);
         uploadImage(file);
     } else {
@@ -107,8 +95,6 @@ function uploadImage(file) {
                     imageUrl.value = response.url;
                     imagePath.value = response.path;
                     if (response.width && response.height && response.size) {
-                        compressedWidth.textContent = response.width;
-                        compressedHeight.textContent = response.height;
                         compressedSize.textContent = (response.size / 1024).toFixed(2);
                         document.getElementById('htmlUrl').value = `<img src="${response.url}" alt="${response.srcName}">`;
                         document.getElementById('markdownUrl').value = `![${response.srcName}](${response.url})`;
@@ -212,7 +198,7 @@ document.querySelectorAll('.copy-indicator').forEach(item => {
         } else {
             const errorMsg = document.createElement('div');
             errorMsg.className = 'delete-success';
-            errorMsg.textContent = '请先上传图片';
+            errorMsg.textContent = '无法复制：未找到有效链接';
             document.body.appendChild(errorMsg);
             setTimeout(() => {
                 errorMsg.classList.add('message-right');
@@ -223,6 +209,8 @@ document.querySelectorAll('.copy-indicator').forEach(item => {
         }
     });
 });
+
+
 
 imageUploadBox.addEventListener('dragover', (event) => {
     event.preventDefault();
