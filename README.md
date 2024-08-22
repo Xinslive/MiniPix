@@ -7,6 +7,8 @@
 
 注：本程序只适合个人自用。目前的功能供个人使用绰绰有余，如果你需要更复杂的更商业化的功能建议选择其他图床程序。
 ## **演示站点**
+服务器出了问题，暂时无法访问
+
 首页：[MiniPix.Pro](https://MiniPix.Pro/)
 
 后台：[MiniPix.Pro 管理后台](https://MiniPix.Pro/admin)
