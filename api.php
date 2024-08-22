@@ -148,7 +148,7 @@ try {
             respondAndExit(['result' => 'error', 'code' => 403, 'message' => 'Token错误']);
         }
         $uploadDir = 'uploads/';
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/octet-stream'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/octet-stream', 'image/avif'];
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $fileMimeType = finfo_file($finfo, $_FILES['image']['tmp_name']);
         finfo_close($finfo);
@@ -168,7 +168,7 @@ try {
         }
 
         $imageInfo = getimagesize($_FILES['image']['tmp_name']);
-        if ($imageInfo === false && $fileMimeType !== 'image/svg+xml') {
+        if ($imageInfo === false && $fileMimeType !== 'image/svg+xml' && $fileMimeType !== 'image/avif') {
             logMessage('文件不是有效的图片');
             respondAndExit(['result' => 'error', 'code' => 406, 'message' => '文件不是有效的图片']);
         }
@@ -222,12 +222,14 @@ try {
                     $finalFilePath = $newFilePathWithoutExt . '.webp';
                     unlink($newFilePath);
                 }
-            } elseif ($fileMimeType !== 'image/webp' && $fileMimeType !== 'image/svg+xml') {
+            } elseif ($fileMimeType !== 'image/webp' && $fileMimeType !== 'image/svg+xml' && $fileMimeType !== 'image/avif') {
                 $convertSuccess = convertToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
                 if ($convertSuccess) {
                     $finalFilePath = $newFilePathWithoutExt . '.webp';
                     unlink($newFilePath);
                 }
+            } else {
+                $finalFilePath = $newFilePath;
             }
 
             if ($signalReceived) {
