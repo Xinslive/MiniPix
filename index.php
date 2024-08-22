@@ -26,9 +26,9 @@ if (!file_exists('static/install.lock')) {
 				<input type="text" id="pasteOrUrlInput" placeholder="此处可粘贴图像URL或使用Ctrl+V粘贴图片">
 			</div>
 			<div id="parameters">
-				<label for="qualityInput">压缩质量（60-99）：<output id="qualityOutput">60</output>
+				<label for="qualityInput">压缩质量（60-99）：<output id="qualityOutput">70</output>
 				</label>
-				<input type="range" id="qualityInput" name="quality" min="60" max="99" value="60" step="1">
+				<input type="range" id="qualityInput" name="quality" min="60" max="99" value="70" step="1">
 			</div>
 			<div id="progressContainer">
 				<div id="progressBar"></div>
@@ -40,23 +40,19 @@ if (!file_exists('static/install.lock')) {
 			<input type="text" class="copy-indicator" id="markdownUrl" readonly placeholder="Markdown代码">
 			<input type="text" class="copy-indicator" id="markdownLinkUrl" readonly placeholder="Markdown链接代码">
 			<input type="text" class="copy-indicator" id="htmlUrl" readonly placeholder="HTML代码">
-			<input type="text" class="hidden-input" id="imagePath" placeholder="保存路径">
+			<input type="text" class="hidden-input" id="imagePath" placeholder="图片路径">
 		</div>
 		<div id="imageInfo" class="double-column-layout">
 			<div>
 				<h2>压缩前</h2>
 				<div style="text-align:center;">
 					<p>大小：<span id="originalSize"></span> KB</p>
-					<p>宽度：<span id="originalWidth"></span> PX</p>
-					<p>高度：<span id="originalHeight"></span> PX</p>
 				</div>
 			</div>
 			<div>
 				<h2>压缩后</h2>
 				<div style="text-align:center;">
 					<p>大小：<span id="compressedSize"></span> KB</p>
-					<p>宽度：<span id="compressedWidth"></span> PX</p>
-					<p>高度：<span id="compressedHeight"></span> PX</p>
 				</div>
 			</div>
 		</div>
