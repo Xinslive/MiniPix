@@ -76,12 +76,27 @@ function ToAvif($source, $destination, $quality) {
     try {
         $effort = intval(($quality - 60) / 10) + 6;
         if ($effort > 9) $effort = 9;
+
         $image = new Imagick($source);
         $image->setImageFormat('avif');
-        $image->setImageBackgroundColor(new ImagickPixel('transparent'));
-        $image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+
+        // 设置AVIF质量
+        $image->setOption('avif:quality', (string)$quality);
         $image->setOption('avif:effort', (string)$effort);
         $image->setOption('avif:chroma-subsampling', '4:2:0');
+
+        // 处理透明背景
+        if ($image->getImageAlphaChannel()) {
+            $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
+            $image->setImageBackgroundColor(new ImagickPixel('transparent'));
+            $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_UNDEFINED);
+        } else {
+            // 如果没有透明度，将背景设置为白色
+            $image->setImageBackgroundColor(new ImagickPixel('white'));
+            $image = $image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+        }
+
+        // 图像尺寸调整
         $width = $image->getImageWidth();
         $height = $image->getImageHeight();
         $maxWidth = 2500;
@@ -92,6 +107,7 @@ function ToAvif($source, $destination, $quality) {
             $newHeight = round($height * $ratio);
             $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_LANCZOS, 1);
         }
+
         $result = $image->writeImage($destination);
         $image->clear();
         $image->destroy();
