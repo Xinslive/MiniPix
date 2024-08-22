@@ -212,7 +212,7 @@ document.querySelectorAll('.copy-indicator').forEach(item => {
         } else {
             const errorMsg = document.createElement('div');
             errorMsg.className = 'delete-success';
-            errorMsg.textContent = '无法复制：未找到有效链接';
+            errorMsg.textContent = '请先上传图片';
             document.body.appendChild(errorMsg);
             setTimeout(() => {
                 errorMsg.classList.add('message-right');
