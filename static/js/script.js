@@ -191,32 +191,36 @@ document.getElementById('deleteImageButton').addEventListener('click', function(
     }
 });
 
-function getPathFromUrl(url) {
-    const urlObj = new URL(url);
-    let path = urlObj.pathname.substring(1);
-    if (path.startsWith('/')) {
-        path = path.substring(1);
-    }
-    return path;
-}
-
 document.querySelectorAll('.copy-indicator').forEach(item => {
     item.addEventListener('click', function(event) {
         event.preventDefault();
-        const textToCopy = this.value;
-        navigator.clipboard.writeText(textToCopy)
-            .then(() => {
-                const copiedMsg = document.createElement('div');
-                copiedMsg.className = 'copy-success';
-                copiedMsg.textContent = '复制成功';
-                document.body.appendChild(copiedMsg);
-                setTimeout(() => {
-                    copiedMsg.classList.add('message-right');
+        const textToCopy = this.value || this.textContent || this.getAttribute('data-copy-text');
+        if (textToCopy) {
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    const copiedMsg = document.createElement('div');
+                    copiedMsg.className = 'copy-success';
+                    copiedMsg.textContent = '复制成功';
+                    document.body.appendChild(copiedMsg);
                     setTimeout(() => {
-                        document.body.removeChild(copiedMsg);
+                        copiedMsg.classList.add('message-right');
+                        setTimeout(() => {
+                            document.body.removeChild(copiedMsg);
+                        }, 1000);
                     }, 1000);
+                });
+        } else {
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'delete-success';
+            errorMsg.textContent = '无法复制：未找到有效链接';
+            document.body.appendChild(errorMsg);
+            setTimeout(() => {
+                errorMsg.classList.add('message-right');
+                setTimeout(() => {
+                    document.body.removeChild(errorMsg);
                 }, 1000);
-            });
+            }, 1000);
+        }
     });
 });
 
