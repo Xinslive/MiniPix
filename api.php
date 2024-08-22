@@ -59,9 +59,8 @@ function correctImageOrientation($image, $exif) {
     return $image;
 }
 
-function convertToWebp($source, $destination, $quality = 60) {
+function ToWebp($source, $destination, $quality = 60) {
     $info = getimagesize($source);
-
     if ($info['mime'] == 'image/jpeg') {
         $image = imagecreatefromjpeg($source);
         $exif = exif_read_data($source);
@@ -73,7 +72,6 @@ function convertToWebp($source, $destination, $quality = 60) {
     } else {
         return false;
     }
-    
     $width = imagesx($image);
     $height = imagesy($image);
     $maxWidth = 2500;
@@ -93,7 +91,7 @@ function convertToWebp($source, $destination, $quality = 60) {
     return $result;
 }
 
-function convertPngWithImagick($source, $destination, $quality = 60) {
+function PngToWebp($source, $destination, $quality = 60) {
     try {
         $image = new Imagick($source);
         $image->setImageFormat('webp');
@@ -120,7 +118,7 @@ function convertPngWithImagick($source, $destination, $quality = 60) {
     }
 }
 
-function convertGifToWebp($source, $destination, $quality = 60) {
+function GifToWebp($source, $destination, $quality = 60) {
     try {
         $image = new Imagick();
         $image->readImage($source);
@@ -186,11 +184,7 @@ try {
         $randomFileName = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
         $newFilePathWithoutExt = $uploadDirWithDatePath . $randomFileName;
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        if (empty($extension)) {
-            $extension = 'webp';
-        }
         $newFilePath = $newFilePathWithoutExt . '.' . $extension;
-        $finalFilePath = $newFilePath;
 
         if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
             logMessage("接收文件成功: $newFilePath");
@@ -211,19 +205,19 @@ try {
             pcntl_alarm($timeout);
 
             if ($fileMimeType === 'image/png') {
-                $convertSuccess = convertPngWithImagick($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+                $convertSuccess = PngToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
                 if ($convertSuccess) {
                     $finalFilePath = $newFilePathWithoutExt . '.webp';
                     unlink($newFilePath);
                 }
             } elseif ($fileMimeType === 'image/gif') {
-                $convertSuccess = convertGifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+                $convertSuccess = GifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
                 if ($convertSuccess) {
                     $finalFilePath = $newFilePathWithoutExt . '.webp';
                     unlink($newFilePath);
                 }
             } elseif ($fileMimeType !== 'image/webp' && $fileMimeType !== 'image/svg+xml' && $fileMimeType !== 'image/avif') {
-                $convertSuccess = convertToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+                $convertSuccess = ToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
                 if ($convertSuccess) {
                     $finalFilePath = $newFilePathWithoutExt . '.webp';
                     unlink($newFilePath);
@@ -302,7 +296,7 @@ if ($storage === 'oss') {
     }
 } else if ($storage === 'local') {
     logMessage("文件存储在本地");
-    $fileUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
+    $fileUrl = 'https://i1.wp.com/' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
     $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
     $storageType = 'local';
     $stmt->bind_param("sss", $fileUrl, $finalFilePath, $storageType);
