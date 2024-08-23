@@ -55,6 +55,12 @@ if (!file_exists('static/install.lock')) {
 					<p>大小：<span id="compressedSize">0</span> KB</p>
 				</div>
 			</div>
+			<div>
+				<h2>压缩率</h2>
+				<div style="text-align:center;">
+					<p><span id="save">0</span>%</p>
+				</div>
+			</div>
 		</div>
 <script type="text/javascript" src="static/js/script.js"></script>
 <script type="text/javascript" src="static/js/cursor.js"></script>
