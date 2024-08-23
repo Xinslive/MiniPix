@@ -46,13 +46,13 @@ if (!file_exists('static/install.lock')) {
 			<div>
 				<h2>处理前</h2>
 				<div style="text-align:center;">
-					<p>大小：<span id="originalSize"></span> KB</p>
+					<p>大小：<span id="originalSize">0</span> KB</p>
 				</div>
 			</div>
 			<div>
 				<h2>处理后</h2>
 				<div style="text-align:center;">
-					<p>大小：<span id="compressedSize"></span> KB</p>
+					<p>大小：<span id="compressedSize">0</span> KB</p>
 				</div>
 			</div>
 		</div>
