@@ -42,7 +42,7 @@ function isValidToken($token) {
     return $token === $validToken;
 }
 
-function ToWebp($source, $destination, $quality = 60) {
+function ToWebp($source, $destination, $quality) {
     try {
         $image = new Imagick($source);
         $image->setImageFormat('webp');
@@ -70,7 +70,7 @@ function ToWebp($source, $destination, $quality = 60) {
     }
 }
 
-function GifToWebp($source, $destination, $quality = 60) {
+function GifToWebp($source, $destination, $quality) {
     try {
         $image = new Imagick();
         $image->readImage($source);
@@ -142,20 +142,8 @@ try {
             logMessage("接收文件成功: $newFilePath");
             ini_set('memory_limit', '1024M');
             set_time_limit(60);
-            $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 60;
-
+            $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 70;
             $convertSuccess = true;
-            $timeout = 15;
-
-            pcntl_async_signals(true);
-
-            $signalReceived = false;
-            pcntl_signal(SIGALRM, function() use (&$signalReceived) {
-                $signalReceived = true;
-            });
-
-            pcntl_alarm($timeout);
-
             if ($fileMimeType === 'image/gif') {
                 $convertSuccess = GifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
                 if ($convertSuccess) {
@@ -171,14 +159,6 @@ try {
             } else {
                 $finalFilePath = $newFilePath;
             }
-
-            if ($signalReceived) {
-                logMessage("文件转换超时: $newFilePath");
-                unlink($newFilePath);
-                respondAndExit(['result' => 'error', 'code' => 500, 'message' => '文件转换超时']);
-            }
-
-            pcntl_alarm(0);
 
 if ($fileMimeType !== 'image/svg+xml') {
     if ($fileMimeType === 'image/avif') {
@@ -200,7 +180,6 @@ if ($fileMimeType !== 'image/svg+xml') {
 }
 
 $compressedSize = filesize($finalFilePath);
-
 
 if ($storage === 'oss') {
     try {
