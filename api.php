@@ -23,7 +23,7 @@ if ($mysqli->connect_error) {
 }
 
 function logMessage($message) {
-    $logFile = 'vendor/process_log.txt';
+    $logFile = '运行日志.txt';
     $currentTime = date('Y-m-d H:i:s');
     $logMessage = "[$currentTime] $message" . PHP_EOL;
     file_put_contents($logFile, $logMessage, FILE_APPEND);
@@ -192,12 +192,12 @@ if ($storage === 'oss') {
             if ($finalFilePath !== $newFilePath) {
                 unlink($newFilePath);
             }
-            logMessage("本地文件已删除: {$finalFilePath}");
+            logMessage("本地文件已删除");
         } else {
             logMessage("尝试删除不存在的文件: {$finalFilePath}");
         }
 
-        logMessage("文件上传到OSS成功: $ossFilePath");
+        logMessage("成功上传到OSS");
         $fileUrl = 'https://' . $cdndomain . '/' . $ossFilePath;
         $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
         $storageType = 'oss';
@@ -216,11 +216,11 @@ if ($storage === 'oss') {
             'path' => $ossFilePath
         ]);
     } catch (OssException $e) {
-        logMessage('文件上传到OSS失败: ' . $e->getMessage());
+        logMessage('文件上传OSS失败: ' . $e->getMessage());
         respondAndExit(['result' => 'error', 'code' => 500, 'message' => '文件上传到OSS失败: ' . $e->getMessage()]);
     }
 } else if ($storage === 'local') {
-    logMessage("文件存储在本地");
+    logMessage("存储在本地");
     $fileUrl = 'https://i1.wp.com/' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
     $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
     $storageType = 'local';
