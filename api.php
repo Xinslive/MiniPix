@@ -60,35 +60,31 @@ function correctImageOrientation($image, $exif) {
 }
 
 function ToWebp($source, $destination, $quality = 60) {
-    $info = getimagesize($source);
-    if ($info['mime'] == 'image/jpeg') {
-        $image = imagecreatefromjpeg($source);
-        $exif = exif_read_data($source);
-        if ($exif !== false) {
-            $image = correctImageOrientation($image, $exif);
+    try {
+        $image = new Imagick($source);
+        $image->setImageFormat('webp');
+        $image->setImageCompressionQuality($quality);
+        $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
+        $image = $image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+        $width = $image->getImageWidth();
+        $height = $image->getImageHeight();
+        $maxWidth = 2500;
+        $maxHeight = 1600;
+        if ($width > $maxWidth || $height > $maxHeight) {
+            $ratio = min($maxWidth / $width, $maxHeight / $height);
+            $newWidth = round($width * $ratio);
+            $newHeight = round($height * $ratio);
+            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_MITCHELL, 1);
         }
-    } elseif ($info['mime'] == 'image/gif') {
-        return false;
-    } else {
+        $result = $image->writeImage($destination);
+        $image->clear();
+        $image->destroy();
+        gc_collect_cycles();
+        return $result;
+    } catch (Exception $e) {
+        logMessage('Imagick转换JPEG失败: ' . $e->getMessage());
         return false;
     }
-    $width = imagesx($image);
-    $height = imagesy($image);
-    $maxWidth = 2500;
-    $maxHeight = 1600;
-    if ($width > $maxWidth || $height > $maxHeight) {
-        $ratio = min($maxWidth / $width, $maxHeight / $height);
-        $newWidth = round($width * $ratio);
-        $newHeight = round($height * $ratio);
-        $newImage = imagecreatetruecolor($newWidth, $newHeight);
-        imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-        imagedestroy($image);
-        $image = $newImage;
-    }
-    $result = imagewebp($image, $destination, $quality);
-    imagedestroy($image);
-    gc_collect_cycles();
-    return $result;
 }
 
 function PngToWebp($source, $destination, $quality = 60) {
@@ -106,11 +102,12 @@ function PngToWebp($source, $destination, $quality = 60) {
             $ratio = min($maxWidth / $width, $maxHeight / $height);
             $newWidth = round($width * $ratio);
             $newHeight = round($height * $ratio);
-            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_LANCZOS, 1);
+            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_MITCHELL, 1);
         }
         $result = $image->writeImage($destination);
         $image->clear();
         $image->destroy();
+        gc_collect_cycles();
         return $result;
     } catch (Exception $e) {
         logMessage('Imagick转换PNG失败: ' . $e->getMessage());
