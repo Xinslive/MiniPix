@@ -42,23 +42,6 @@ function isValidToken($token) {
     return $token === $validToken;
 }
 
-function correctImageOrientation($image, $exif) {
-    if (!empty($exif['Orientation'])) {
-        switch ($exif['Orientation']) {
-            case 3:
-                $image = imagerotate($image, 180, 0);
-                break;
-            case 6:
-                $image = imagerotate($image, -90, 0);
-                break;
-            case 8:
-                $image = imagerotate($image, 90, 0);
-                break;
-        }
-    }
-    return $image;
-}
-
 function ToWebp($source, $destination, $quality = 60) {
     try {
         $image = new Imagick($source);
@@ -162,7 +145,7 @@ try {
             $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 60;
 
             $convertSuccess = true;
-            $timeout = 10;
+            $timeout = 15;
 
             pcntl_async_signals(true);
 
