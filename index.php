@@ -44,13 +44,13 @@ if (!file_exists('static/install.lock')) {
 		</div>
 		<div id="imageInfo" class="double-column-layout">
 			<div>
-				<h2>压缩前</h2>
+				<h2>处理前</h2>
 				<div style="text-align:center;">
 					<p>大小：<span id="originalSize"></span> KB</p>
 				</div>
 			</div>
 			<div>
-				<h2>压缩后</h2>
+				<h2>处理后</h2>
 				<div style="text-align:center;">
 					<p>大小：<span id="compressedSize"></span> KB</p>
 				</div>
