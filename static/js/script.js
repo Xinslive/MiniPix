@@ -96,6 +96,8 @@ function uploadImage(file) {
                     imagePath.value = response.path;
                     if (response.width && response.height && response.size) {
                         compressedSize.textContent = (response.size / 1024).toFixed(2);
+                        const savePercentage = ((file.size - response.size) / file.size * 100).toFixed(2);
+                        document.getElementById('save').textContent = savePercentage
                         document.getElementById('htmlUrl').value = `<img src="${response.url}" alt="${response.srcName}">`;
                         document.getElementById('markdownUrl').value = `![${response.srcName}](${response.url})`;
                         document.getElementById('markdownLinkUrl').value = `[![${response.srcName}](${response.url})](${response.url})`;
