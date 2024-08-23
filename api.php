@@ -197,7 +197,7 @@ if ($storage === 'oss') {
             logMessage("尝试删除不存在的文件: {$finalFilePath}");
         }
 
-        logMessage("成功上传到OSS");
+        logMessage("图片处理成功，已上传OSS");
         $fileUrl = 'https://' . $cdndomain . '/' . $ossFilePath;
         $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
         $storageType = 'oss';
@@ -220,8 +220,8 @@ if ($storage === 'oss') {
         respondAndExit(['result' => 'error', 'code' => 500, 'message' => '文件上传到OSS失败: ' . $e->getMessage()]);
     }
 } else if ($storage === 'local') {
-    logMessage("存储在本地");
-    $fileUrl = 'https://i1.wp.com/' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
+    logMessage("图片处理成功，本地存储");
+    $fileUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
     $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
     $storageType = 'local';
     $stmt->bind_param("sss", $fileUrl, $finalFilePath, $storageType);
