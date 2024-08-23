@@ -74,7 +74,7 @@ function ToWebp($source, $destination, $quality = 60) {
             $ratio = min($maxWidth / $width, $maxHeight / $height);
             $newWidth = round($width * $ratio);
             $newHeight = round($height * $ratio);
-            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_MITCHELL, 1);
+            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_BOX, 1);
         }
         $result = $image->writeImage($destination);
         $image->clear();
@@ -82,35 +82,7 @@ function ToWebp($source, $destination, $quality = 60) {
         gc_collect_cycles();
         return $result;
     } catch (Exception $e) {
-        logMessage('Imagick转换JPEG失败: ' . $e->getMessage());
-        return false;
-    }
-}
-
-function PngToWebp($source, $destination, $quality = 60) {
-    try {
-        $image = new Imagick($source);
-        $image->setImageFormat('webp');
-        $image->setImageCompressionQuality($quality);
-        $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
-        $image = $image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
-        $width = $image->getImageWidth();
-        $height = $image->getImageHeight();
-        $maxWidth = 2500;
-        $maxHeight = 1600;
-        if ($width > $maxWidth || $height > $maxHeight) {
-            $ratio = min($maxWidth / $width, $maxHeight / $height);
-            $newWidth = round($width * $ratio);
-            $newHeight = round($height * $ratio);
-            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_MITCHELL, 1);
-        }
-        $result = $image->writeImage($destination);
-        $image->clear();
-        $image->destroy();
-        gc_collect_cycles();
-        return $result;
-    } catch (Exception $e) {
-        logMessage('Imagick转换PNG失败: ' . $e->getMessage());
+        logMessage('Imagick转换失败: ' . $e->getMessage());
         return false;
     }
 }
@@ -201,13 +173,7 @@ try {
 
             pcntl_alarm($timeout);
 
-            if ($fileMimeType === 'image/png') {
-                $convertSuccess = PngToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
-                if ($convertSuccess) {
-                    $finalFilePath = $newFilePathWithoutExt . '.webp';
-                    unlink($newFilePath);
-                }
-            } elseif ($fileMimeType === 'image/gif') {
+            if ($fileMimeType === 'image/gif') {
                 $convertSuccess = GifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
                 if ($convertSuccess) {
                     $finalFilePath = $newFilePathWithoutExt . '.webp';
