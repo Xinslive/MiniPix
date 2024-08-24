@@ -73,7 +73,7 @@ function deleteImage(id, path) {
         customConfirm.classList.add('fade-out');
         setTimeout(function() {
             customConfirm.parentNode.removeChild(customConfirm);
-        }, 100);
+        });
 
         document.getElementById('confirm-delete').removeEventListener('click', confirmDeleteHandler);
         document.getElementById('cancel-delete').removeEventListener('click', cancelDeleteHandler);
