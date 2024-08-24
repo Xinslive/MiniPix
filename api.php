@@ -138,27 +138,33 @@ try {
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
         $newFilePath = $newFilePathWithoutExt . '.' . $extension;
 
-        if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
-            logMessage("接收文件成功: $newFilePath");
-            ini_set('memory_limit', '1024M');
-            set_time_limit(60);
-            $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 70;
-            $convertSuccess = true;
-            if ($fileMimeType === 'image/gif') {
-                $convertSuccess = GifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
-                if ($convertSuccess) {
-                    $finalFilePath = $newFilePathWithoutExt . '.webp';
-                    unlink($newFilePath);
-                }
-            } elseif ($fileMimeType !== 'image/webp' && $fileMimeType !== 'image/svg+xml' && $fileMimeType !== 'image/avif') {
-                $convertSuccess = ToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
-                if ($convertSuccess) {
-                    $finalFilePath = $newFilePathWithoutExt . '.webp';
-                    unlink($newFilePath);
-                }
-            } else {
-                $finalFilePath = $newFilePath;
+if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
+    logMessage("接收文件成功: $newFilePath");
+    ini_set('memory_limit', '1024M');
+    set_time_limit(60);
+    $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 70;
+    if ($quality === 100) {
+        $finalFilePath = $newFilePath;
+    } else {
+        $convertSuccess = true;
+        if ($fileMimeType === 'image/gif') {
+            $convertSuccess = GifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+            if ($convertSuccess) {
+                $finalFilePath = $newFilePathWithoutExt . '.webp';
+                unlink($newFilePath);
             }
+        } elseif ($fileMimeType !== 'image/webp' && $fileMimeType !== 'image/svg+xml' && $fileMimeType !== 'image/avif') {
+            $convertSuccess = ToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
+            if ($convertSuccess) {
+                $finalFilePath = $newFilePathWithoutExt . '.webp';
+                unlink($newFilePath);
+            }
+        } else {
+            $finalFilePath = $newFilePath;
+        }
+    }
+
+
 
 if ($fileMimeType !== 'image/svg+xml') {
     if ($fileMimeType === 'image/avif') {
@@ -197,7 +203,7 @@ if ($storage === 'oss') {
             logMessage("尝试删除不存在的文件: {$finalFilePath}");
         }
 
-        logMessage("图片处理成功，已上传OSS");
+        logMessage("成功上传到OSS");
         $fileUrl = 'https://' . $cdndomain . '/' . $ossFilePath;
         $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
         $storageType = 'oss';
@@ -209,7 +215,7 @@ if ($storage === 'oss') {
             'result' => 'success',
             'code' => 200,
             'url' => $fileUrl,
-            'srcName' => $randomFileName,
+            'srcName' => $randomFileName . 'webp',
             'width' => $compressedWidth,
             'height' => $compressedHeight,
             'size' => $compressedSize,
@@ -220,8 +226,8 @@ if ($storage === 'oss') {
         respondAndExit(['result' => 'error', 'code' => 500, 'message' => '文件上传到OSS失败: ' . $e->getMessage()]);
     }
 } else if ($storage === 'local') {
-    logMessage("图片处理成功，本地存储");
-    $fileUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
+    logMessage("存储在本地");
+    $fileUrl = 'https://i1.wp.com/' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
     $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
     $storageType = 'local';
     $stmt->bind_param("sss", $fileUrl, $finalFilePath, $storageType);
@@ -232,7 +238,7 @@ if ($storage === 'oss') {
         'result' => 'success',
         'code' => 200,
         'url' => $fileUrl,
-        'srcName' => $randomFileName,
+        'srcName' => $randomFileName . '.webp',
         'width' => $compressedWidth,
         'height' => $compressedHeight,
         'size' => $compressedSize,
