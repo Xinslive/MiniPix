@@ -157,6 +157,9 @@ try {
             ini_set('memory_limit', '1024M');
             set_time_limit(60);
             $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 70;
+            if ($quality === 100) {
+            $finalFilePath = $newFilePath;
+            } else {
             $convertSuccess = true;
             if ($fileMimeType === 'image/gif') {
                 $convertSuccess = GifToWebp($newFilePath, $newFilePathWithoutExt . '.webp', $quality);
@@ -173,7 +176,7 @@ try {
             } else {
                 $finalFilePath = $newFilePath;
             }
-
+        }
 if ($fileMimeType !== 'image/svg+xml') {
     try {
         $image = new Imagick($finalFilePath);
