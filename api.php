@@ -57,7 +57,7 @@ function ToWebp($source, $destination, $quality) {
             $ratio = min($maxWidth / $width, $maxHeight / $height);
             $newWidth = round($width * $ratio);
             $newHeight = round($height * $ratio);
-            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_BOX, 1);
+            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_MITCHELL, 1);
         }
         $result = $image->writeImage($destination);
         $image->clear();
