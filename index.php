@@ -23,12 +23,12 @@ if (!file_exists('static/install.lock')) {
 				<img id="imagePreview" src="static/svg/up.svg" alt="预览图片">
 			</div>
 			<div id="pasteOrUrlInputBox">
-				<input type="text" id="pasteOrUrlInput" placeholder="此处可粘贴图像URL或使用Ctrl+V粘贴图片">
+				<input type="text" id="pasteOrUrlInput" placeholder="本站支持：拖拽上传、粘贴上传、点击上传">
 			</div>
 			<div id="parameters">
-				<label for="qualityInput">压缩质量（60-99）：<output id="qualityOutput">70</output>
+				<label for="qualityInput">压缩质量（选择100时不压缩）：<output id="qualityOutput">70</output>
 				</label>
-				<input type="range" id="qualityInput" name="quality" min="60" max="99" value="70" step="1">
+				<input type="range" id="qualityInput" name="quality" min="60" max="100" value="70" step="5">
 			</div>
 			<div id="progressContainer">
 				<div id="progressBar"></div>
@@ -46,13 +46,13 @@ if (!file_exists('static/install.lock')) {
 			<div>
 				<h2>处理前</h2>
 				<div style="text-align:center;">
-					<p>大小：<span id="originalSize">0</span> KB</p>
+					<p><span id="originalSize">0</span> KB</p>
 				</div>
 			</div>
 			<div>
 				<h2>处理后</h2>
 				<div style="text-align:center;">
-					<p>大小：<span id="compressedSize">0</span> KB</p>
+					<p><span id="compressedSize">0</span> KB</p>
 				</div>
 			</div>
 			<div>
