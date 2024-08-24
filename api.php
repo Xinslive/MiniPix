@@ -227,7 +227,7 @@ if ($storage === 'oss') {
     }
 } else if ($storage === 'local') {
     logMessage("存储在本地");
-    $fileUrl = 'https://i1.wp.com/' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
+    $fileUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
     $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
     $storageType = 'local';
     $stmt->bind_param("sss", $fileUrl, $finalFilePath, $storageType);
