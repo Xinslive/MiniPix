@@ -93,7 +93,7 @@ function ToAvif($source, $destination, $quality) {
             $ratio = min($maxWidth / $width, $maxHeight / $height);
             $newWidth = (int)($width * $ratio);
             $newHeight = (int)($height * $ratio);
-            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_BOX, 1);
+            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_MITCHELL, 1);
         }
         $image->writeImage($destination);
         handleImageObject($image);
