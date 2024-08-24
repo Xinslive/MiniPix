@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-if (file_exists('../static/install.lock')) {
+if (file_exists('../other/install.lock')) {
     echo '
     <!DOCTYPE html>
     <html>
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($mysql as $key => $value) {
             $configContent .= "$key = $value\n";
         }
-        file_put_contents('../static/config.ini', $configContent);
+        file_put_contents('../other/config.ini', $configContent);
 
         $mysqli = new mysqli($mysql['dbHost'], $mysql['dbUser'], $mysql['dbPass'], $mysql['dbName']);
         if ($mysqli->connect_error) {
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'storage' => 'oss'
         ];
 
-        $configContent = file_get_contents('../static/config.ini');
+        $configContent = file_get_contents('../other/config.ini');
         $configContent .= "\n[OSS]\n";
         foreach ($oss as $key => $value) {
             $configContent .= "$key = $value\n";
@@ -136,10 +136,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($token as $key => $value) {
             $configContent .= "$key = $value\n";
         }
-        file_put_contents('../static/config.ini', $configContent);
-        chmod('../static/config.ini', 0600);
+        file_put_contents('../other/config.ini', $configContent);
+        chmod('../other/config.ini', 0600);
 
-        file_put_contents('../static/install.lock', '安装锁');
+        file_put_contents('../other/install.lock', '安装锁');
         header('Location: install.php?step=4');
         exit;
     }
