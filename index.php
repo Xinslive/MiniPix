@@ -19,7 +19,7 @@ if (!file_exists('static/install.lock')) {
          <button id="deleteImageButton">×</button>
 		<form id="uploadForm" action="api.php" method="POST" enctype="multipart/form-data">
 			<div id="imageUploadBox" onclick="document.getElementById('imageInput').click();">
-				<input type="file" id="imageInput" name="image" accept="image/*" required style="display: none;" onchange="updateImagePreview(event);">
+				<input type="file" id="imageInput" name="image" accept="image/png, image/jpeg, image/webp, image/svg+xml, image/gif, image/avif" required style="display: none;" onchange="updateImagePreview(event);">
 				<img id="imagePreview" src="static/svg/up.svg" alt="预览图片">
 			</div>
 			<div id="pasteOrUrlInputBox">
