@@ -273,7 +273,7 @@ class FtpStorage implements StorageInterface {
     }
 
     public function getFileUrl($path) {
-        return 'ftp://' . $this->ftpConfig['host'] . '/' . $path;
+        return 'https://' . $this->ftpConfig['domain'] . '/' . $path;
     }
 
     public function __destruct() {
@@ -298,8 +298,8 @@ function getStorage($storage) {
             if (!class_exists($ossClientClass) || !class_exists($ossExceptionClass)) {
                 throw new Exception("OSS 类未加载");
             }
-            $ossClient = new $ossClientClass($config['accessKeyId'], $config['accessKeySecret'], $config['endpoint']);
-            return new OssStorage($ossClient, $config['bucket'], $config['cdndomain']);
+            $ossClient = new $ossClientClass($config['ossAccessKeyId'], $config['ossAccessKeySecret'], $config['ossEndpoint']);
+            return new OssStorage($ossClient, $config['ossBucket'], $config['ossdomain']);
 
         case 'local':
             return new LocalStorage();
@@ -315,7 +315,8 @@ function getStorage($storage) {
                 'host' => $config['ftpHost'],
                 'port' => $config['ftpPort'],
                 'username' => $config['ftpUsername'],
-                'password' => $config['ftpPassword']
+                'password' => $config['ftpPassword'],
+                'domain' => $config['ftpdomain']
             ]);
 
         default:
