@@ -6,9 +6,10 @@ const progressBar = document.getElementById('progressBar');
 const progressContainer = document.getElementById('progressContainer');
 const urlOutput = document.getElementById('urlOutput');
 const imageUrl = document.getElementById('imageUrl');
-const imagePath = document.getElementById('imagePath');
+const srcName = document.getElementById('srcName');
 const originalSize = document.getElementById('originalSize');
 const compressedSize = document.getElementById('compressedSize');
+const save = document.getElementById('save');
 const pasteOrUrlInput = document.getElementById('pasteOrUrlInput');
 const token = '1c17b11693cb5ec63859b091c5b9c1b2';
 const deleteImageButton = document.getElementById('deleteImageButton');
@@ -93,7 +94,7 @@ function uploadImage(file) {
                 const response = JSON.parse(xhr.responseText);
                 if (response.url) {
                     imageUrl.value = response.url;
-                    imagePath.value = response.path;
+                    srcName.value = response.srcName;
                     if (response.width && response.height && response.size) {
                         compressedSize.textContent = (response.size / 1024).toFixed(2);
                         const savePercentage = ((file.size - response.size) / file.size * 100).toFixed(2);
@@ -124,14 +125,15 @@ function uploadImage(file) {
 
 document.getElementById('deleteImageButton').addEventListener('click', function(event) {
     event.stopPropagation();
-    const Path = imagePath.value;
-    if (Path) {
-        fetch('./vendor/del.php', {
+    const srcNames = srcName.value;
+    console.log('srcName:', srcName);
+    if (srcNames) {
+        fetch('./other/del.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `path=${encodeURIComponent(Path)}`,
+            body: `srcName=${encodeURIComponent(srcNames)}`,
         })
         .then((response) => {
             if (!response.ok) {
@@ -175,7 +177,7 @@ document.getElementById('deleteImageButton').addEventListener('click', function(
             alert('删除过程中发生错误，请重试。');
         });
     } else {
-        alert('没有图片路径信息，删除操作无法执行');
+        alert('没有图片名称信息，删除操作无法执行');
     }
 });
 
@@ -211,8 +213,6 @@ document.querySelectorAll('.copy-indicator').forEach(item => {
         }
     });
 });
-
-
 
 imageUploadBox.addEventListener('dragover', (event) => {
     event.preventDefault();

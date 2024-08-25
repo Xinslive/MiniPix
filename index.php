@@ -1,6 +1,6 @@
 <?php
-if (!file_exists('static/install.lock')) {
-    header('Location: vendor/install.php');
+if (!file_exists('other/install.lock')) {
+    header('Location: other/install.php');
     exit;
 }
 ?>
@@ -40,7 +40,7 @@ if (!file_exists('static/install.lock')) {
 			<input type="text" class="copy-indicator" id="markdownUrl" readonly placeholder="Markdown代码">
 			<input type="text" class="copy-indicator" id="markdownLinkUrl" readonly placeholder="Markdown链接代码">
 			<input type="text" class="copy-indicator" id="htmlUrl" readonly placeholder="HTML代码">
-			<input type="text" class="hidden-input" id="imagePath" placeholder="图片路径">
+			<input type="text" class="hidden-input" id="srcName" placeholder="图片名称">
 		</div>
 		<div id="imageInfo" class="double-column-layout">
 			<div>

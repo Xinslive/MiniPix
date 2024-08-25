@@ -1,15 +1,9 @@
 <?php
-//include 'vendor/validate.php';
-require_once 'vendor/autoload.php';
-use OSS\OssClient;
-use OSS\Core\OssException;
+//include 'other/validate.php';
+require_once 'other/process.php';
 
-$config = parse_ini_file('./static/config.ini');
-$accessKeyId = $config['accessKeyId'];
-$accessKeySecret = $config['accessKeySecret'];
-$endpoint = $config['endpoint'];
-$bucket = $config['bucket'];
-$cdndomain = $config['cdndomain'];
+$config = parse_ini_file('./other/config.ini');
+
 $validToken = $config['validToken'];
 $dbHost = $config['dbHost'];
 $dbUser = $config['dbUser'];
@@ -40,54 +34,6 @@ function respondAndExit($response) {
 function isValidToken($token) {
     global $validToken;
     return $token === $validToken;
-}
-
-function ToWebp($source, $destination, $quality) {
-    try {
-        $image = new Imagick($source);
-        $image->setImageFormat('webp');
-        $image->setImageCompressionQuality($quality);
-        $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
-        $image = $image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
-        $width = $image->getImageWidth();
-        $height = $image->getImageHeight();
-        $maxWidth = 2500;
-        $maxHeight = 1600;
-        if ($width > $maxWidth || $height > $maxHeight) {
-            $ratio = min($maxWidth / $width, $maxHeight / $height);
-            $newWidth = round($width * $ratio);
-            $newHeight = round($height * $ratio);
-            $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_MITCHELL, 1);
-        }
-        $result = $image->writeImage($destination);
-        $image->clear();
-        $image->destroy();
-        gc_collect_cycles();
-        return $result;
-    } catch (Exception $e) {
-        logMessage('Imagick转换失败: ' . $e->getMessage());
-        return false;
-    }
-}
-
-function GifToWebp($source, $destination, $quality) {
-    try {
-        $image = new Imagick();
-        $image->readImage($source);
-        $image = $image->coalesceImages();
-        foreach ($image as $frame) {
-            $frame->setImageFormat('webp');
-            $frame->setImageCompressionQuality($quality);
-        }
-        $image = $image->optimizeImageLayers();
-        $result = $image->writeImages($destination, true);
-        $image->clear();
-        $image->destroy();
-        return $result;
-    } catch (Exception $e) {
-        logMessage('GIF转换WebP失败: ' . $e->getMessage());
-        return false;
-    }
 }
 
 try {
@@ -164,8 +110,6 @@ if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
         }
     }
 
-
-
 if ($fileMimeType !== 'image/svg+xml') {
     if ($fileMimeType === 'image/avif') {
         $image = new Imagick($finalFilePath);
@@ -187,50 +131,214 @@ if ($fileMimeType !== 'image/svg+xml') {
 
 $compressedSize = filesize($finalFilePath);
 
-if ($storage === 'oss') {
-    try {
-        $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
-        $ossFilePath = $datePath . '/' . basename($finalFilePath);
-        $ossClient->uploadFile($bucket, $ossFilePath, $finalFilePath);
+interface StorageInterface {
+    public function upload($filePath, $datePath);
+    public function getFileUrl($path);
+}
 
+class OssStorage implements StorageInterface {
+    private $ossClient;
+    private $bucket;
+    private $cdndomain;
+
+    public function __construct($ossClient, $bucket, $cdndomain) {
+        $this->ossClient = $ossClient;
+        $this->bucket = $bucket;
+        $this->cdndomain = $cdndomain;
+    }
+
+    public function upload($filePath, $datePath) {
+        $ossFilePath = $datePath . '/' . basename($filePath);
+        $this->ossClient->uploadFile($this->bucket, $ossFilePath, $filePath);
+        return $ossFilePath;
+    }
+
+    public function getFileUrl($path) {
+        return 'https://' . $this->cdndomain . '/' . $path;
+    }
+}
+
+class LocalStorage implements StorageInterface {
+    public function upload($filePath, $datePath) {
+        return 'uploads/' . $datePath . '/' . basename($filePath);
+    }
+    
+    public function getFileUrl($path) {
+        return 'https://' . $_SERVER['HTTP_HOST'] . '/' . $path;
+    }
+}
+
+class S3Storage implements StorageInterface {
+    private $s3Client;
+    private $bucket;
+    private $domain;
+    private $customUrlPrefix;
+
+    public function __construct($config) {
+        $this->s3Client = new Aws\S3\S3Client([
+            'version' => 'latest',
+            'region'  => $config['S3Region'],
+            'endpoint' => $config['S3Endpoint'],
+            'credentials' => [
+                'key'    => $config['S3AccessKeyId'],
+                'secret' => $config['S3AccessKeySecret'],
+            ],
+        ]);
+        $this->bucket = $config['S3Bucket'];
+        $this->customUrlPrefix = $config['customUrlPrefix'] ?? '';
+    }
+
+    public function upload($filePath, $datePath) {
+        $s3FilePath = $datePath . '/' . basename($filePath);
+        try {
+            $result = $this->s3Client->putObject([
+                'Bucket' => $this->bucket,
+                'Key'    => $s3FilePath,
+                'SourceFile' => $filePath,
+                'ACL'    => 'public-read',
+            ]);
+            logMessage("文件上传到S3成功: $s3FilePath");
+        } catch (Aws\Exception\AwsException $e) {
+            throw new Exception("S3 上传失败: " . $e->getMessage());
+        }
+
+        return $result['ObjectURL'];
+    }
+
+    public function getFileUrl($path) {
+        if (empty($this->customUrlPrefix)) {
+            return $path;
+        } else {
+            return $this->customUrlPrefix . '/' . $path;
+        }
+    }
+}
+
+class FtpStorage implements StorageInterface {
+    private $ftpConn;
+    private $ftpConfig;
+
+    public function __construct($config) {
+        $this->ftpConfig = $config;
+        $this->ftpConn = ftp_connect($config['host'], $config['port']);
+        if (!$this->ftpConn) {
+            throw new Exception("FTP 连接失败");
+        }
+        $login = ftp_login($this->ftpConn, $config['username'], $config['password']);
+        if (!$login) {
+            throw new Exception("FTP 登录失败");
+        }
+        ftp_pasv($this->ftpConn, true); // 启用被动模式
+    }
+
+    public function upload($filePath, $datePath) {
+        if (!file_exists($filePath)) {
+            throw new Exception("本地文件不存在: $filePath");
+        }
+        $ftpFilePath = $datePath . '/' . basename($filePath);
+        $ftpDir = dirname($ftpFilePath);
+        $this->createDirectoryIfNotExists($ftpDir);
+        if (!ftp_put($this->ftpConn, $ftpFilePath, $filePath, FTP_BINARY)) {
+            $error = error_get_last()['message'];
+            throw new Exception("FTP 上传失败: " . $error);
+        }
+        return $ftpFilePath;
+    }
+
+    private function createDirectoryIfNotExists($ftpDir) {
+        $dirs = explode('/', $ftpDir);
+        $path = '';
+        foreach ($dirs as $dir) {
+            if ($dir === '') continue;
+            $path .= '/' . $dir;
+            if (!$this->directoryExists($path)) {
+                if (!@ftp_mkdir($this->ftpConn, $path)) {
+                    $error = error_get_last()['message'];
+                    throw new Exception("无法创建目录: $path. 错误信息: " . $error);
+                }
+            }
+        }
+    }
+
+    private function directoryExists($path) {
+        $currentDir = ftp_pwd($this->ftpConn);
+        if (@ftp_chdir($this->ftpConn, $path)) {
+            ftp_chdir($this->ftpConn, $currentDir);
+            return true;
+        }
+        ftp_chdir($this->ftpConn, $currentDir);
+        return false;
+    }
+
+    public function getFileUrl($path) {
+        return 'https://' . $this->ftpConfig['domain'] . '/' . $path;
+    }
+
+    public function __destruct() {
+        if ($this->ftpConn) {
+            ftp_close($this->ftpConn);
+        }
+    }
+}
+
+
+
+function getStorage($storage) {
+    global $config;
+
+    switch ($storage) {
+        case 'oss':
+            if (!class_exists('OSS\OssClient')) {
+                require_once 'vendor/autoload.php';
+            }
+            $ossClientClass = 'OSS\OssClient';
+            $ossExceptionClass = 'OSS\Core\OssException';
+            if (!class_exists($ossClientClass) || !class_exists($ossExceptionClass)) {
+                throw new Exception("OSS 类未加载");
+            }
+            $ossClient = new $ossClientClass($config['ossAccessKeyId'], $config['ossAccessKeySecret'], $config['ossEndpoint']);
+            return new OssStorage($ossClient, $config['ossBucket'], $config['ossdomain']);
+
+        case 'local':
+            return new LocalStorage();
+
+        case 's3':
+            if (!class_exists('Aws\S3\S3Client')) {
+                require_once 'vendor/autoload.php';
+            }
+            return new S3Storage($config);
+
+        case 'ftp':
+            return new FtpStorage([
+                'host' => $config['ftpHost'],
+                'port' => $config['ftpPort'],
+                'username' => $config['ftpUsername'],
+                'password' => $config['ftpPassword'],
+                'domain' => $config['ftpdomain']
+            ]);
+
+        default:
+            throw new Exception("不支持的存储类型: " . $storage);
+    }
+}
+
+try {
+    $storageInstance = getStorage($storage);
+    $uploadedFilePath = $storageInstance->upload($finalFilePath, $datePath);
+    if ($storage !== 'local') {
         if (file_exists($finalFilePath)) {
             unlink($finalFilePath);
             if ($finalFilePath !== $newFilePath) {
                 unlink($newFilePath);
             }
-            logMessage("本地文件已删除");
         } else {
             logMessage("尝试删除不存在的文件: {$finalFilePath}");
         }
-
-        logMessage("成功上传到OSS");
-        $fileUrl = 'https://' . $cdndomain . '/' . $ossFilePath;
-        $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
-        $storageType = 'oss';
-        $stmt->bind_param("sss", $fileUrl, $ossFilePath, $storageType);
-        $stmt->execute();
-        $stmt->close();
-
-        respondAndExit([
-            'result' => 'success',
-            'code' => 200,
-            'url' => $fileUrl,
-            'srcName' => $randomFileName . 'webp',
-            'width' => $compressedWidth,
-            'height' => $compressedHeight,
-            'size' => $compressedSize,
-            'path' => $ossFilePath
-        ]);
-    } catch (OssException $e) {
-        logMessage('文件上传OSS失败: ' . $e->getMessage());
-        respondAndExit(['result' => 'error', 'code' => 500, 'message' => '文件上传到OSS失败: ' . $e->getMessage()]);
     }
-} else if ($storage === 'local') {
-    logMessage("存储在本地");
-    $fileUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/' . $uploadDirWithDatePath . basename($finalFilePath);
-    $stmt = $mysqli->prepare("INSERT INTO images (url, path, storage) VALUES (?, ?, ?)");
-    $storageType = 'local';
-    $stmt->bind_param("sss", $fileUrl, $finalFilePath, $storageType);
+
+    $fileUrl = $storageInstance->getFileUrl($uploadedFilePath);
+    $stmt = $mysqli->prepare("INSERT INTO images (url, path, srcName , storage) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $fileUrl, $uploadedFilePath, $randomFileName, $storage);
     $stmt->execute();
     $stmt->close();
 
@@ -238,12 +346,14 @@ if ($storage === 'oss') {
         'result' => 'success',
         'code' => 200,
         'url' => $fileUrl,
-        'srcName' => $randomFileName . '.webp',
+        'srcName' => $randomFileName,
         'width' => $compressedWidth,
         'height' => $compressedHeight,
-        'size' => $compressedSize,
-        'path' => $finalFilePath
+        'size' => $compressedSize
     ]);
+} catch (Exception $e) {
+    logMessage('文件上传失败: ' . $e->getMessage());
+    respondAndExit(['result' => 'error', 'code' => 500, 'message' => '文件上传失败: ' . $e->getMessage()]);
 }
 
 } else {
@@ -257,4 +367,5 @@ if ($storage === 'oss') {
     logMessage('未知错误: ' . $e->getMessage());
     respondAndExit(['result' => 'error', 'code' => 500, 'message' => '发生未知错误: ' . $e->getMessage()]);
 }
+
 ?>

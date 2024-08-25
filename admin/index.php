@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$config = parse_ini_file('../static/config.ini');
+$config = parse_ini_file('../other/config.ini');
 $dbHost = $config['dbHost'];
 $dbUser = $config['dbUser'];
 $dbPass = $config['dbPass'];
