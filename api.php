@@ -251,8 +251,7 @@ class FtpStorage implements StorageInterface {
         $path = '';
         foreach ($dirs as $dir) {
             if ($dir === '') continue;
-            $path .= $dir . '/';
-            $path = rtrim($path, '/');
+            $path .= '/' . $dir;
 
             if (!$this->directoryExists($path)) {
                 if (!@ftp_mkdir($this->ftpConn, $path)) {
@@ -262,6 +261,27 @@ class FtpStorage implements StorageInterface {
             }
         }
     }
+
+    private function directoryExists($path) {
+        $currentDir = ftp_pwd($this->ftpConn);
+        if (@ftp_chdir($this->ftpConn, $path)) {
+            ftp_chdir($this->ftpConn, $currentDir);
+            return true;
+        }
+        ftp_chdir($this->ftpConn, $currentDir);
+        return false;
+    }
+
+    public function getFileUrl($path) {
+        return 'ftp://' . $this->ftpConfig['host'] . '/' . $path;
+    }
+
+    public function __destruct() {
+        if ($this->ftpConn) {
+            ftp_close($this->ftpConn);
+        }
+    }
+}
 
     private function directoryExists($path) {
         $currentDir = ftp_pwd($this->ftpConn);
