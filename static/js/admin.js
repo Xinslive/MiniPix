@@ -1,4 +1,4 @@
-function deleteImage(id, path) {
+function deleteImage(id, srcName) {
     var existingConfirm = document.querySelector('.custom-confirm');
     if (existingConfirm) {
         existingConfirm.parentNode.removeChild(existingConfirm);
@@ -63,7 +63,7 @@ function deleteImage(id, path) {
         xhr.onerror = function() {
             alert('请求失败。');
         };
-        xhr.send('path=' + encodeURIComponent(path));
+        xhr.send('srcName=' + encodeURIComponent(srcName));
 
         document.getElementById('confirm-delete').removeEventListener('click', confirmDeleteHandler);
         document.getElementById('cancel-delete').removeEventListener('click', cancelDeleteHandler);
@@ -129,8 +129,8 @@ function bindImageActions() {
     document.querySelectorAll('.delete-btn').forEach(function(button) {
         button.addEventListener('click', function() {
             var id = this.getAttribute('data-id');
-            var path = this.getAttribute('data-path');
-            deleteImage(id, path);
+            var srcName = this.getAttribute('data-path');
+            deleteImage(id, srcName);
         });
     });
 
@@ -142,3 +142,4 @@ function bindImageActions() {
     });
 }
 bindImageActions();
+
