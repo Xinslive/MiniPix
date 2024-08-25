@@ -3,66 +3,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 if (file_exists('install.lock')) {
-    echo '
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>系统已安装</title>
-        <link rel="shortcut icon" href="static/favicon.ico">
-        <style>
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-                background: url(/static/background.webp) no-repeat 100% 100%;
-                background-size: cover;
-                background-attachment: fixed;
-                -webkit-tap-highlight-color: transparent;
-            }
-            .message-box {
-                max-width: 600px;
-                padding: 20px;
-                background-color: #fff;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                border-radius: 5px;
-                text-align: center;
-                background-color: rgba(255, 255, 255, 0.4);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-            }
-            .message-box h1 {
-                color: #a94442;
-                font-size: 24px;
-                margin-bottom: 10px;
-            }
-            .go-home-button {
-                display: inline-block;
-                padding: 10px 20px;
-                background-color: #4CAF50;
-                color: white;
-                text-decoration: none;
-                border-radius: 5px;
-                font-size: 18px;
-                transition: background-color 0.3s;
-            }
-            .go-home-button:hover {
-                background-color: #45a049;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="message-box">
-            <h1>系统已经安装成功</h1>
-            <a href="/" class="go-home-button">前往首页</a>
-        </div>
-    </body>
-    </html>
-    ';
-    die();
+    $host = $_SERVER['HTTP_HOST'];
+    $url = "https://$host/";
+    header("Location: $url");
+    exit();
 }
 
 $step = isset($_GET['step']) ? intval($_GET['step']) : 1;
