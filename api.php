@@ -162,6 +162,7 @@ class LocalStorage implements StorageInterface {
     public function upload($filePath, $datePath) {
         return 'uploads/' . $datePath . '/' . basename($filePath);
     }
+    
     public function getFileUrl($path) {
         return 'https://' . $_SERVER['HTTP_HOST'] . '/' . $path;
     }
@@ -170,7 +171,7 @@ class LocalStorage implements StorageInterface {
 class S3Storage implements StorageInterface {
     private $s3Client;
     private $bucket;
-    private $cdndomain;
+    private $domain;
     private $customUrlPrefix;
 
     public function __construct($config) {
@@ -184,7 +185,6 @@ class S3Storage implements StorageInterface {
             ],
         ]);
         $this->bucket = $config['S3Bucket'];
-        $this->cdndomain = $config['S3cdndomain'];
         $this->customUrlPrefix = $config['customUrlPrefix'] ?? '';
     }
 
@@ -201,12 +201,13 @@ class S3Storage implements StorageInterface {
         } catch (Aws\Exception\AwsException $e) {
             throw new Exception("S3 上传失败: " . $e->getMessage());
         }
-        return $s3FilePath;
+
+        return $result['ObjectURL'];
     }
 
     public function getFileUrl($path) {
         if (empty($this->customUrlPrefix)) {
-            return 'https://' . $this->cdndomain . '/' . $path;
+            return $path;
         } else {
             return $this->customUrlPrefix . '/' . $path;
         }
@@ -234,11 +235,9 @@ class FtpStorage implements StorageInterface {
         if (!file_exists($filePath)) {
             throw new Exception("本地文件不存在: $filePath");
         }
-
         $ftpFilePath = $datePath . '/' . basename($filePath);
         $ftpDir = dirname($ftpFilePath);
         $this->createDirectoryIfNotExists($ftpDir);
-
         if (!ftp_put($this->ftpConn, $ftpFilePath, $filePath, FTP_BINARY)) {
             $error = error_get_last()['message'];
             throw new Exception("FTP 上传失败: " . $error);
@@ -252,7 +251,6 @@ class FtpStorage implements StorageInterface {
         foreach ($dirs as $dir) {
             if ($dir === '') continue;
             $path .= '/' . $dir;
-
             if (!$this->directoryExists($path)) {
                 if (!@ftp_mkdir($this->ftpConn, $path)) {
                     $error = error_get_last()['message'];
