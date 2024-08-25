@@ -21,8 +21,8 @@ class OssStorage extends StorageHandler {
 
     public function __construct($config) {
         parent::__construct('oss', $config);
-        $this->ossClient = new \OSS\OssClient($config['ossAccessKeyId'], $config['ossAccessKeySecret'], $config['ossEndpoint']);
-        $this->bucket = $config['ossBucket'];
+        $this->ossClient = new \OSS\OssClient($config['accessKeyId'], $config['accessKeySecret'], $config['endpoint']);
+        $this->bucket = $config['bucket'];
     }
 
     public function delete($path) {
@@ -45,7 +45,7 @@ class LocalStorage extends StorageHandler {
         if (file_exists($localFilePath)) {
             unlink($localFilePath);
         } else {
-            throw new Exception("本地文件不存在");
+            throw new Exception("本地文件不存在: $path");
         }
     }
 }
@@ -71,7 +71,7 @@ class FtpStorage extends StorageHandler {
 
     public function delete($path) {
         if (!ftp_delete($this->ftpConn, $path)) {
-            throw new Exception("从 FTP 删除失败");
+            throw new Exception("从 FTP 删除失败: $path");
         }
     }
 
@@ -175,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['result' => 'success', 'message' => '图片删除成功']);
         } else {
             echo json_encode(['result' => 'error', 'message' => '无法从数据库中删除']);
-            error_log("无法从数据库中删除': $srcName");
+            error_log("无法从数据库中删除: $srcName");
         }
         $stmt->close();
     } catch (Exception $e) {
