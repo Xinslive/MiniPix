@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('max_execution_time', 600);
 
 if (file_exists('install.lock')) {
     $host = $_SERVER['HTTP_HOST'];
@@ -29,29 +30,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         file_put_contents('config.ini', $configContent);
 
         $mysqli = new mysqli($mysql['dbHost'], $mysql['dbUser'], $mysql['dbPass'], $mysql['dbName']);
-            $checkTableSQL = "SHOW TABLES LIKE 'images'";
-            $result = $mysqli->query($checkTableSQL);
-            if ($result && $result->num_rows === 0) {
-                $createTableSQL = "
-                CREATE TABLE IF NOT EXISTS images (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    url VARCHAR(255) NOT NULL,
-                    path VARCHAR(255) NOT NULL,
-                    srcName VARCHAR(255) NOT NULL UNIQUE,
-                    storage VARCHAR(255) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    INDEX idx_srcName (srcName)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-                ";
-                if ($mysqli->query($createTableSQL) === FALSE) {
-                    $error = '创建数据表失败: ' . $mysqli->error;
-                } else {
-                    header('Location: install.php?step=2');
-                    exit;
-                }
+        $checkTableSQL = "SHOW TABLES LIKE 'images'";
+        $result = $mysqli->query($checkTableSQL);
+        if ($result && $result->num_rows === 0) {
+            $createTableSQL = "
+            CREATE TABLE IF NOT EXISTS images (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                url VARCHAR(255) NOT NULL,
+                path VARCHAR(255) NOT NULL,
+                srcName VARCHAR(255) NOT NULL UNIQUE,
+                storage VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_srcName (srcName)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ";
+            if ($mysqli->query($createTableSQL) === FALSE) {
+                $error = '创建数据表失败: ' . $mysqli->error;
             } else {
-                header('Location: install.php?step=4');
+                header('Location: install.php?step=2');
                 exit;
+            }
+        } else {
+            header('Location: install.php?step=3');
+            exit;
         }
     } elseif ($step === 2) {
         $other = [
@@ -100,12 +101,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         file_put_contents('config.ini', $configContent);
         chmod('config.ini', 0600);
-        header('Location: install.php?step=1');
+
+        $parentDir = dirname(__DIR__);
+        exec("composer require aws/aws-sdk-php -d $parentDir", $outputAws, $returnAws);
+        exec("composer require aliyuncs/oss-sdk-php -d $parentDir", $outputOss, $returnOss);
+        exec("composer require qcloud/cos-sdk-v5 -d $parentDir", $outputCos, $returnCos);
+
         file_put_contents('install.lock', '安装锁');
+        header('Location: install.php?step=1');
         exit;
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -250,12 +256,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
         <div class="form-group">
-            <button type="submit">完成安装</button>
+            <button type="submit">继续安装（后台安装SDK，耐心等待）</button>
         </div>
     </form>
-<?php elseif ($step === 4): ?>
+<?php elseif ($step === 3): ?>
     <p>创建数据库表失败，请清空数据库再安装</p>
-    <div class="message-box"><a href="/" class="go-home-button">重新安装</a></div>
+    <div class="message-box"><a href="/" class="go-home-button">重新开始</a></div>
 <?php endif; ?>
 <?php if ($error): ?>
     <div class="error-message">
