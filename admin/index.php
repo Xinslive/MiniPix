@@ -70,7 +70,7 @@ function renderImages($mysqli, $items_per_page, $offset) {
             $images[] = [
                 'id' => $row['id'],
                 'url' => $row['url'],
-                'path' => $row['path']
+                'srcName' => $row['srcName']
             ];
         }
     }
@@ -156,46 +156,23 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
     <title>后台</title>
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/static/css/admin.css">
-    <!-- 引入Fancybox 当前版本 Fancybox5.0.36 -->
     <link rel="stylesheet" href="/static/css/fancybox.min.css?v=5.0.36">
     <script src="/static/js/fancybox.umd.min.js?v=5.0.36" defer></script>
     <!-- 你可以使用第三方CDN进行加速 当前版本 Fancybox5.0.36 -->
     <!-- <link rel="stylesheet" href="https://cdn.cbd.int/pixpro@1.7.0/static/css/fancybox.min.css?v=5.0.36">
     <script src="https://cdn.cbd.int/pixpro@1.7.0/static/js/fancybox.umd.min.js?v=5.0.36" defer></script> -->
+
 </head>
 <body>
-    <div id="gallery" class="gallery"></div>
-    <div id="pagination" class="pagination"></div>
-    <div id="loading-indicator" class="loading-indicator">
-        <div class="spinner"></div>
-        <div class="loading-text">加载中...</div>
-    </div>
-    <a href="/" class="floating-link"><img src="/static/svg/home.svg" alt="🏠" style="width:30px;height:30px;"></a>
-    <a class="top-link" id="scroll-to-top"><img src="/static/svg/top.svg" alt="⬆️" /></a>
-    <script type="text/javascript" src="/static/js/admin.js"></script>
-    <script type="text/javascript" src="/static/js/ajax.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        initializeFancyBox();
-    });
-
-    function initializeFancyBox() {
-        Fancybox.bind('[data-fancybox="gallery"]', {
-            Toolbar: {
-                display: {
-                    left: ["infobar"],
-                    middle: [
-                        "rotateCCW",
-                        "rotateCW",
-                        "flipX",
-                        "flipY",
-                    ],
-                    right: ["thumbs", "close"],
-                },
-            },
-        });
-    }
-</script>
-
+<div id="gallery" class="gallery"></div>
+<div id="pagination" class="pagination"></div>
+<div id="loading-indicator" class="loading-indicator">
+    <div class="spinner"></div>
+    <div class="loading-text">加载中...</div>
+</div>
+<a href="/" class="floating-link"><img src="/static/svg/home.svg" alt="🏠" style="width:30px;height:30px;"></a>
+<a class="top-link" id="scroll-to-top"><img src="/static/svg/top.svg" alt="⬆️" /></a>
+<script type="text/javascript" src="/static/js/admin.js"></script>
+<script type="text/javascript" src="/static/js/ajax.js"></script>
 </body>
 </html>
