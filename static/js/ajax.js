@@ -1,4 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        Toolbar: {
+            display: {
+                left: ["infobar"],
+                middle: [
+                    "rotateCCW",
+                    "rotateCW",
+                    "flipX",
+                    "flipY",
+                ],
+                right: ["thumbs", "close"],
+            },
+        },
+        loop: true,
+        protect: true,
+        arrows: true,
+        buttons: [
+            'slideShow',
+            'fullScreen',
+            'thumbs',
+            'close'
+        ],
+    });
+
     loadPage(1);
 
     document.getElementById('pagination').addEventListener('click', function(event) {
@@ -6,6 +30,20 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             const page = event.target.getAttribute('data-page');
             loadPage(page);
+        }
+    });
+
+    document.getElementById('scroll-to-top').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    window.addEventListener('scroll', function() {
+        const scrollToTop = document.getElementById('scroll-to-top');
+        if (window.scrollY > 100) {
+            scrollToTop.style.display = 'block';
+        } else {
+            scrollToTop.style.display = 'none';
         }
     });
 });
@@ -33,17 +71,17 @@ function loadPage(page) {
                     imageContainer.id = `image-${image.id}`;
                     imageContainer.innerHTML = `
                         <a href="${image.url}" data-fancybox="gallery">
-                            <img src="${image.url}" alt="Image">
+                            <img src="${image.url}" alt="${image.srcName}">
                         </a>
-                        <button class="delete-btn" data-id="${image.id}" data-path="${image.path}"><img src="/static/svg/xmark.svg" alt="X" /></button>
-                        <button class="copy-btn" data-url="${image.url}"><img  src="/static/svg/link.svg" alt="Copy" /></button>
+                        <button class="delete-btn" data-id="${image.id}" data-path="${image.srcName}"><img src="/static/svg/xmark.svg" alt="X" /></button>
+                        <button class="copy-btn" data-url="${image.url}"><img src="/static/svg/link.svg" alt="Copy" /></button>
                     `;
                     gallery.appendChild(imageContainer);
                 });
                 setTimeout(() => {
                     gallery.style.display = 'block';
                     pagination.innerHTML = response.pagination;
-                    lightbox.reload();
+                    Fancybox.bind('[data-fancybox="gallery"]');
                     bindImageActions();
                     loadingIndicator.style.display = 'none';
                 }, 100);
@@ -55,17 +93,3 @@ function loadPage(page) {
     };
     xhr.send();
 }
-
-document.getElementById('scroll-to-top').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-window.addEventListener('scroll', function() {
-    const scrollToTop = document.getElementById('scroll-to-top');
-    if (window.scrollY > 100) {
-        scrollToTop.style.display = 'block';
-    } else {
-        scrollToTop.style.display = 'none';
-    }
-});
