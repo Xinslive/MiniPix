@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'S3Bucket' => $_POST['S3Bucket'] ?? '',
             'S3Endpoint' => $_POST['S3Endpoint'] ?? '',
             'S3AccessKeyId' => $_POST['S3AccessKeyId'] ?? '',
-            's3AccessKeySecret' => $_POST['s3AccessKeySecret'] ?? '',
+            'S3AccessKeySecret' => $_POST['s3AccessKeySecret'] ?? '',
             'customUrlPrefix' => $_POST['customUrlPrefix'] ?? '',
         ];
         $ftp = [
