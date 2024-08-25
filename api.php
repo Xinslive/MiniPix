@@ -179,13 +179,15 @@ class S3Storage implements StorageInterface {
             'version' => 'latest',
             'region'  => $config['S3Region'],
             'endpoint' => $config['S3Endpoint'],
+            'use_path_style_endpoint' => true,
             'credentials' => [
                 'key'    => $config['S3AccessKeyId'],
                 'secret' => $config['S3AccessKeySecret'],
             ],
         ]);
         $this->bucket = $config['S3Bucket'];
-        $this->customUrlPrefix = $config['customUrlPrefix'] ?? '';
+        $this->customUrlPrefix = isset($config['customUrlPrefix']) ? 
+            str_replace('http://', 'https://', $config['customUrlPrefix']) : '';
     }
 
     public function upload($filePath, $datePath) {
@@ -202,7 +204,7 @@ class S3Storage implements StorageInterface {
             throw new Exception("S3 上传失败: " . $e->getMessage());
         }
 
-        return $result['ObjectURL'];
+        return $this->getFileUrl($s3FilePath);
     }
 
     public function getFileUrl($path) {
