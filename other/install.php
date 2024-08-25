@@ -105,8 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $parentDir = dirname(__DIR__);
         exec("composer require aws/aws-sdk-php -d $parentDir", $outputAws, $returnAws);
         exec("composer require aliyuncs/oss-sdk-php -d $parentDir", $outputOss, $returnOss);
-        exec("composer require qcloud/cos-sdk-v5 -d $parentDir", $outputCos, $returnCos);
-
         file_put_contents('install.lock', '安装锁');
         header('Location: install.php?step=1');
         exit;
