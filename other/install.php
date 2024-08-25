@@ -199,19 +199,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="oss_bucket" name="oss_bucket">
             </div>
             <div class="form-group">
-                <label for="oss_domain">OSS 域名</label>
-                <input type="text" id="oss_domain" name="oss_domain">
+                <label for="oss_domain">OSS 访问域名</label>
+                <input type="text" id="oss_domain" value="your.domain.com" name="oss_domain">
             </div>
         </div>
         <div id="ftp_section" class="storage-section" style="display:none;">
             <h3>FTP 配置</h3>
             <div class="form-group">
-                <label for="ftpHost">FTP 主机</label>
+                <label for="ftpHost">FTP 主机地址</label>
                 <input type="text" id="ftpHost" name="ftpHost">
             </div>
             <div class="form-group">
                 <label for="ftpPort">FTP 端口</label>
-                <input type="text" id="ftpPort" name="ftpPort">
+                <input type="text" id="ftpPort" value="21" name="ftpPort">
             </div>
             <div class="form-group">
                 <label for="ftpUsername">FTP 用户名</label>
@@ -222,8 +222,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="password" id="ftpPassword" name="ftpPassword">
             </div>
             <div class="form-group">
-                <label for="ftpdomain">FTP 域名</label>
-                <input type="text" id="ftpdomain" name="ftpdomain">
+                <label for="ftpdomain">FTP 访问域名</label>
+                <input type="text" id="ftpdomain" value="your.domain.com" name="ftpdomain">
             </div>
         </div>
         <div id="s3_section" class="storage-section" style="display:none;">
@@ -249,12 +249,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="s3AccessKeySecret" name="s3AccessKeySecret">
             </div>
             <div class="form-group">
-                <label for="customUrlPrefix">自定义 URL 前缀</label>
-                <input type="text" id="customUrlPrefix" name="customUrlPrefix">
+                <label for="customUrlPrefix">自定义 URL 域名</label>
+                <input type="text" id="customUrlPrefix" value="https://your.domain.com" name="customUrlPrefix">
             </div>
         </div>
         <div class="form-group">
-            <button type="submit">继续安装（后台安装SDK，耐心等待）</button>
+            <button type="submit">继续安装（安装SDK，耐心等待）</button>
         </div>
     </form>
 <?php elseif ($step === 3): ?>
