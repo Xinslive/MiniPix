@@ -21,8 +21,8 @@ class OssStorage extends StorageHandler {
 
     public function __construct($config) {
         parent::__construct('oss', $config);
-        $this->ossClient = new \OSS\OssClient($config['accessKeyId'], $config['accessKeySecret'], $config['endpoint']);
-        $this->bucket = $config['bucket'];
+        $this->ossClient = new \OSS\OssClient($config['ossAccessKeyId'], $config['ossAccessKeySecret'], $config['ossEndpoint']);
+        $this->bucket = $config['ossBucket'];
     }
 
     public function delete($path) {
