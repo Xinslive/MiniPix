@@ -6,7 +6,6 @@ function ToWebp($source, $destination, $quality) {
         $image->setImageFormat('webp');
         $image->setImageCompressionQuality($quality);
         $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
-        $image = $image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
         $width = $image->getImageWidth();
         $height = $image->getImageHeight();
         $maxWidth = 2500;
