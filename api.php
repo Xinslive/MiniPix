@@ -204,14 +204,16 @@ class S3Storage implements StorageInterface {
             throw new Exception("S3 上传失败: " . $e->getMessage());
         }
 
-        return $this->getFileUrl($s3FilePath);
+        return $this->getFileUrl($result['ObjectURL']);
     }
 
-    public function getFileUrl($path) {
-        if (empty($this->customUrlPrefix)) {
-            return $path;
+    public function getFileUrl($s3Url) {
+        if (!empty($this->customUrlPrefix)) {
+            $parsedUrl = parse_url($s3Url);
+            $path = $parsedUrl['path'];
+            return rtrim($this->customUrlPrefix, '/') . '/' . ltrim($path, '/');
         } else {
-            return $this->customUrlPrefix . '/' . $path;
+            return $s3Url;
         }
     }
 }
