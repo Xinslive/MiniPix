@@ -260,7 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </form>
 <?php elseif ($step === 3): ?>
-    <p>创建数据库表失败，请清空数据库再安装</p>
+    <p>创建数据表失败，请清空数据库再安装</p>
     <div class="message-box"><a href="/" class="go-home-button">重新开始</a></div>
 <?php endif; ?>
 <?php if ($error): ?>
