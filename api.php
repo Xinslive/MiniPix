@@ -1,6 +1,6 @@
 <?php
 //include 'other/validate.php';
-require_once 'other/process.php';
+require_once 'other/webp.php';
 
 $config = parse_ini_file('./other/config.ini');
 
