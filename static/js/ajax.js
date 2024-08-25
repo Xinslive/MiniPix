@@ -32,7 +32,7 @@ function loadPage(page) {
                     imageContainer.classList.add('gallery-item');
                     imageContainer.id = `image-${image.id}`;
                     imageContainer.innerHTML = `
-                        <a href="${image.url}" class="glightbox">
+                        <a href="${image.url}" data-fancybox="gallery">
                             <img src="${image.url}" alt="Image">
                         </a>
                         <button class="delete-btn" data-id="${image.id}" data-path="${image.path}"><img src="/static/svg/xmark.svg" alt="X" /></button>
