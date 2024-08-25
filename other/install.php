@@ -256,10 +256,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php elseif ($step === 4): ?>
     <p>创建数据库表失败，请清空数据库再安装</p>
     <div class="message-box"><a href="/" class="go-home-button">重新安装</a></div>
-<?php elseif ($step === 5): ?>
-    <p>连接数据库失败，看看你填的什么东西？</p>
-    <div class="message-box"><a href="/" class="go-home-button">重新安装</a></div>
-
 <?php endif; ?>
 <?php if ($error): ?>
     <div class="error-message">
