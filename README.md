@@ -50,7 +50,7 @@ location ~* /config\.ini$ {
 ### **上传限制**
 先删除api.php文件第二行的注释符。
 
-再编辑 vendor/validate.php 文件。
+再编辑 other/validate.php 文件。
 ```
 <?php
 session_start();
