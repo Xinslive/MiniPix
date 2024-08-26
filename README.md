@@ -41,18 +41,14 @@ storage = local
 默认提供的安装包不含SDK，安装时会进行在线下载所需要的SDK。（安装时依赖 **exec** 函数，自己在php禁用函数那里解除一下禁用，安装好之后就用不到 exec 了，建议恢复禁用状态。）
 ## **安全配置**
 ### **配置信息安全**
-设置如下 nginx 规则
-
-（可以放到伪静态规则那里，也可以放到网站配置中）
+设置如下 nginx 规则（可以放到伪静态规则那里）
 ```
 location ~* /config\.ini$ {
     deny all;
 }
 ```
 ### **上传限制**
-先删除api.php文件第二行的注释符。
-
-再编辑 other/validate.php 文件。
+先删除api.php文件第二行的注释符，再编辑 other/validate.php 文件。
 ```
 <?php
 session_start();
@@ -86,6 +82,35 @@ if ($uploadCheck !== true) {
 ```
 ### **修改后台地址**
 直接修改 admin 目录名即可
+
+## **参数介绍**
+```
+validToken = 1c17b11693cb5ec63859b091c5b9c1b2 //对接API时需要验证的Token，不建议修改。
+storage = local //可选参数有：local s3 oss ftp
+
+[OSS]
+ossAccessKeyId = xxxxxxxxxx
+ossAccessKeySecret = xxxxxxxxx
+ossEndpoint = xxxxxxxxx
+ossBucket = xxxxxxxxx
+ossdomain = xxx.xxx.xxx //不要携带 “http(s)://” 和 “ / ” 
+
+
+[S3]
+S3Region = cn-east-1
+S3Bucket = xxxxxx
+S3Endpoint = https://s3.bitiful.net  //链接后面不带“ / ”
+S3AccessKeyId = xxxxxxx
+S3AccessKeySecret = xxxxxxxxx
+customUrlPrefix = https://xxx.xxx.xxx  //链接后面不带“ / ”
+
+[FTP]
+ftpHost = xxx.xxx.xxx  //这里填你的ftp主机地址
+ftpPort = 21 //ftp默认端口一般是21，但是也有不用默认端口的
+ftpUsername = xxxxx //ftp账号
+ftpPassword = xxxxx //ftp密码
+ftpdomain = xxx.xxx.xxx //你绑定ftp的域名，不要携带 “http(s)://” 和 “ / ” 
+```
 
 ## **拓展功能**
 
