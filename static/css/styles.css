@@ -133,6 +133,7 @@ nav,
     border-radius: 8px;
     outline: 0;
     border: 1px solid #aaa;
+    cursor: pointer;
 }
 
 #pasteOrUrlInputBox {
@@ -170,7 +171,6 @@ nav,
     margin-top: 20px;
     padding: 20px;
     border-radius: 8px;
-    word-wrap: break-word;
 }
 
 .copy-indicator {
@@ -198,6 +198,7 @@ nav,
     border-radius: 8px;
     margin-bottom: 10px;
     position: relative;
+    cursor: pointer;
 }
 
 #parameters label {
