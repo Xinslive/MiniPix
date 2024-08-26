@@ -102,7 +102,7 @@ S3Bucket = xxxxxx
 S3Endpoint = https://s3.bitiful.net  //链接后面不带“ / ”
 S3AccessKeyId = xxxxxxx
 S3AccessKeySecret = xxxxxxxxx
-customUrlPrefix = https://xxx.xxx.xxx  //链接后面不带“ / ”
+customUrlPrefix = https://xxx.xxx.xxx  //你的自定义域名，链接后面不带“ / ”
 
 [FTP]
 ftpHost = xxx.xxx.xxx  //这里填你的ftp主机地址
