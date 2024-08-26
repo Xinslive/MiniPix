@@ -238,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="S3Endpoint">S3 Endpoint</label>
-                <input type="text" id="S3Endpoint" name="S3Endpoint">
+                <input type="text" id="S3Endpoint" value="https://s3.bitiful.net" name="S3Endpoint">
             </div>
             <div class="form-group">
                 <label for="S3AccessKeyId">S3 AccessKeyId</label>
@@ -249,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="s3AccessKeySecret" name="s3AccessKeySecret">
             </div>
             <div class="form-group">
-                <label for="customUrlPrefix">自定义 URL 域名</label>
+                <label for="customUrlPrefix">自定义访问域名</label>
                 <input type="text" id="customUrlPrefix" value="https://your.domain.com" name="customUrlPrefix">
             </div>
         </div>
