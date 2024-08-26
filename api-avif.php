@@ -80,7 +80,7 @@ try {
             imagedestroy($image);
         }
 
-        $randomFileName = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $randomFileName = str_pad(mt_rand(0, 999999999), 9, '0', STR_PAD_LEFT);
         $newFilePathWithoutExt = $uploadDirWithDatePath . $randomFileName;
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
         $newFilePath = $newFilePathWithoutExt . '.' . $extension;
