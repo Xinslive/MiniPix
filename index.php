@@ -37,8 +37,8 @@ if (!file_exists('other/install.lock')) {
 		</div>
 		<div id="urlOutput">
 			<input type="text" class="copy-indicator" id="imageUrl" readonly placeholder="图片链接">
-			<input type="text" class="copy-indicator" id="markdownUrl" readonly placeholder="Markdown代码">
-			<input type="text" class="copy-indicator" id="markdownLinkUrl" readonly placeholder="Markdown链接代码">
+			<input type="text" class="copy-indicator" id="markdownUrl" readonly placeholder="Markdown">
+			<input type="text" class="copy-indicator" id="bbcode" readonly placeholder="BBCode">
 			<input type="text" class="copy-indicator" id="htmlUrl" readonly placeholder="HTML代码">
 			<input type="text" class="hidden-input" id="srcName" placeholder="图片名称">
 		</div>
