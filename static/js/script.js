@@ -88,6 +88,12 @@ function uploadImage(file) {
             progressContainer.style.display = 'block';
         }
     });
+    imageUrl.value = '';
+    compressedSize.textContent = '0';
+    document.getElementById('save').textContent = '0';
+    document.getElementById('htmlUrl').value = '';
+    document.getElementById('markdownUrl').value = '';
+    document.getElementById('bbcode').value = '';
     xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
@@ -155,6 +161,9 @@ document.getElementById('deleteImageButton').addEventListener('click', function(
                     }, 1500);
                     document.getElementById('imagePreview').src = 'static/svg/up.svg';
                     document.getElementById('deleteImageButton').style.display = 'none';
+                    originalSize.textContent = '0';
+                    compressedSize.textContent = '0';
+                    document.getElementById('save').textContent = '0';
                     var inputsToClear = document.querySelectorAll('#urlOutput input');
                     inputsToClear.forEach(function(input) {
                     input.value = '';
