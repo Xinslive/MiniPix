@@ -39,6 +39,8 @@ storage = local
 本程序依赖PHP的 Fileinfo 、 Imagick 拓展，需要自行安装。（如果出现问题，请先确认你安装的 Imagick 拓展是否支持 Webp ）
 
 默认提供的安装包不含SDK，安装时会进行在线下载所需要的SDK。（安装时依赖 **exec** 函数，自己在php禁用函数那里解除一下禁用，安装好之后就用不到 exec 了，建议恢复禁用状态。）
+
+安装SDK过程中出现问题的，可以手动上传SDJ文件到根目录安装：https://github.com/Xinslive/MiniPix/releases/download/v2.17/SDK.zip
 ## **安全配置**
 ### **配置信息安全**
 设置如下 nginx 规则（可以放到伪静态规则那里）
