@@ -101,7 +101,7 @@ function uploadImage(file) {
                         document.getElementById('save').textContent = savePercentage
                         document.getElementById('htmlUrl').value = `<img src="${response.url}" alt="${response.srcName}">`;
                         document.getElementById('markdownUrl').value = `![${response.srcName}](${response.url})`;
-                        document.getElementById('markdownLinkUrl').value = `[![${response.srcName}](${response.url})](${response.url})`;
+                        document.getElementById('bbcode').value = `[img=${response.width},${response.height}]${response.url}[/img]`;
                         deleteImageButton.style.display = 'block';
                         urlOutput.style.display = 'block';
                     } else {
