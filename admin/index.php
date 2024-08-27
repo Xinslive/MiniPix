@@ -168,7 +168,6 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
 <div id="pagination" class="pagination"></div>
 <div id="loading-indicator" class="loading-indicator">
     <div class="spinner"></div>
-    <div class="loading-text">加载中...</div>
 </div>
 <a href="/" class="floating-link"><img src="/static/svg/home.svg" alt="🏠" style="width:30px;height:30px;"></a>
 <a class="top-link" id="scroll-to-top"><img src="/static/svg/top.svg" alt="⬆️" /></a>
