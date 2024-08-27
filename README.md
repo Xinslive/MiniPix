@@ -41,6 +41,7 @@ storage = local
 默认提供的安装包不含SDK，安装时会进行在线下载所需要的SDK。（安装时依赖 **exec** 函数，自己在php禁用函数那里解除一下禁用，安装好之后就用不到 exec 了，建议恢复禁用状态。）
 
 安装SDK过程中出现问题的（主要是墙的原因），可以手动上传SDK文件到网站根目录安装
+
 SDK下载：https://github.com/Xinslive/MiniPix/releases/download/v2.17/SDK.zip
 ## **安全配置**
 ### **配置信息安全**
