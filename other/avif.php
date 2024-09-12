@@ -34,7 +34,7 @@ function ToAvif($source, $destination, $quality) {
         $image->setImageFormat('avif');
         $image->setOption('avif:quality', (string)$quality);
         $image->setOption('avif:effort', (string)$effort);
-        $image->setOption('avif:chroma-subsampling', '4:4:4');
+        $image->setOption('avif:chroma-subsampling', '4:2:0');
         if ($image->getImageAlphaChannel()) {
             $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
             $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_SET);
