@@ -77,7 +77,7 @@ if ($uploadCheck !== true) {
 
 ## **参数介绍**
 ```
-validToken = 1c17b11693cb5ec63859b091c5b9c1b2 //对接API时需要验证的Token，不建议修改。我在首页js里写死这个token了，如果你要修改这个，记得同步修改首页js内的token
+validToken = 1c17b11693cb5ec63859b091c5b9c1b2 //我在首页js里写死这个token了，如果你要修改，记得同步修改首页js内的token
 storage = local //可选参数有：local s3 oss ftp
 
 [OSS]
