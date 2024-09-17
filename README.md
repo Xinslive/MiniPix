@@ -77,28 +77,28 @@ if ($uploadCheck !== true) {
 
 ## **参数介绍**
 ```
-validToken = 1c17b11693cb5ec63859b091c5b9c1b2 //对接API时需要验证的Token，不建议修改。
+validToken = 1c17b11693cb5ec63859b091c5b9c1b2 //对接API时需要验证的Token，不建议修改。我在首页js里写死这个token了，如果你要修改这个，记得同步修改首页js内的token
 storage = local //可选参数有：local s3 oss ftp
 
 [OSS]
 ossAccessKeyId = xxxxxxxxxx
 ossAccessKeySecret = xxxxxxxxx
-ossEndpoint = xxxxxxxxx
-ossBucket = xxxxxxxxx
+ossEndpoint = xxxxxxxxx  //地域节点
+ossBucket = xxxxxxxxx  //储存桶名
 ossdomain = xxx.xxx.xxx //不要携带 “http(s)://” 和 “ / ” 
 
 
 [S3]
 S3Region = cn-east-1
 S3Bucket = xxxxxx
-S3Endpoint = https://s3.bitiful.net  //链接后面不带“ / ”
+S3Endpoint = https://s3.bitiful.net  //链接后面不带“ / ”，但是前面要带“ https:// ”
 S3AccessKeyId = xxxxxxx
 S3AccessKeySecret = xxxxxxxxx
-customUrlPrefix = https://xxx.xxx.xxx  //你的自定义域名，链接后面不带“ / ”
+customUrlPrefix = https://xxx.xxx.xxx  //你的自定义域名，链接后面不带“ / ”，但是前面要带“ https:// ”
 
 [FTP]
 ftpHost = xxx.xxx.xxx  //这里填你的ftp主机地址
-ftpPort = 21 //ftp默认端口一般是21，但是也有不用默认端口的
+ftpPort = 21 //ftp默认端口一般是21，但是也有不用默认端口的，根据实际来填写。
 ftpUsername = xxxxx //ftp账号
 ftpPassword = xxxxx //ftp密码
 ftpdomain = xxx.xxx.xxx //你绑定ftp的域名，不要携带 “http(s)://” 和 “ / ” 
