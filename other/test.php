@@ -1,4 +1,7 @@
 <?php
+if (!extension_loaded('imagick')) {
+    die('未检测到 ImageMagick 扩展，请安装拓展后再试。');
+}
 $imagick = new Imagick();
 $version = $imagick->getVersion()['versionString'];
 $supportedFormats = $imagick->queryFormats('*');
