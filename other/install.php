@@ -3,6 +3,17 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('max_execution_time', 600);
 
+if (!extension_loaded('imagick')) {
+    header("Location: /other/test.php");
+    exit();
+} else {
+    $imagick = new Imagick();
+    if (!in_array('WEBP', $imagick->queryFormats())) {
+        header("Location: /other/test.php");
+        exit();
+    }
+}
+
 if (file_exists('install.lock')) {
     $host = $_SERVER['HTTP_HOST'];
     $url = "https://$host/";
