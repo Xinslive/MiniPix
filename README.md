@@ -42,38 +42,7 @@ location ~* /config\.ini$ {
 }
 ```
 ### **上传限制**
-先删除api.php文件第二行的注释符，再编辑 other/validate.php 文件。
-```
-<?php
-session_start();
-
-function isUploadAllowed() {
-    // 上传大小限制
-    if ($_FILES['image']['size'] > 5000000) {
-        return '文件大小超过5MB';
-    }
-
-    // 上传频率限制
-    $timeLimit = 3; // 3秒
-    if (isset($_SESSION['last_upload_time'])) {
-        $lastUploadTime = $_SESSION['last_upload_time'];
-        if (time() - $lastUploadTime < $timeLimit) {
-            return '上传过于频繁，请稍后再试';
-        }
-    }
-
-    $_SESSION['last_upload_time'] = time();
-
-    return true;
-}
-
-$uploadCheck = isUploadAllowed();
-if ($uploadCheck !== true) {
-    echo json_encode(['error' => $uploadCheck]);
-    exit();
-}
-?>
-```
+先删除api.php文件第二行的注释符，启用上传限制，再根据需要，编辑 other/validate.php 文件。
 ### **修改后台地址**
 直接修改 admin 目录名即可
 
