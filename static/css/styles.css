@@ -230,7 +230,7 @@ nav,
 }
 
 .double-column-layout>div {
-    flex-basis: 33%;
+    flex-basis: 25%;
     box-sizing: border-box;
 }
 
