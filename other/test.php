@@ -82,7 +82,7 @@ $supportWebp = in_array('WEBP', $supportedFormats);
         </p>
     </div>
 
-    <div class="<?php echo $supportAvif ? 'result2' : 'result1'; ?>">
+    <div class="<?php echo $supportWebp ? 'result2' : 'result1'; ?>">
         <h2>收费服务：安装合格拓展</h2>
         <p>如果你搞不定的话，我可以提供技术支持</p>
         <p>支付10元，我可以帮你装上支持WEBP的拓展</p>
