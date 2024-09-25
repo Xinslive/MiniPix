@@ -85,6 +85,7 @@ try {
         $newFilePath = $newFilePathWithoutExt . '.' . $extension;
 
 if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
+    $startTime = microtime(true);
     logMessage("接收文件成功: $newFilePath");
     ini_set('memory_limit', '1024M');
     set_time_limit(60);
@@ -108,6 +109,8 @@ if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
         } else {
             $finalFilePath = $newFilePath;
         }
+        $endTime = microtime(true);
+        $processingTime = round(($endTime - $startTime) * 1000);
     }
 
 if ($fileMimeType !== 'image/svg+xml') {
@@ -353,6 +356,7 @@ try {
         'srcName' => $randomFileName,
         'width' => $compressedWidth,
         'height' => $compressedHeight,
+        'ptime' => $processingTime,
         'size' => $compressedSize
     ]);
 } catch (Exception $e) {
