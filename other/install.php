@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" id="db_pass" name="db_pass" required>
         </div>
         <div class="form-group">
-            <label for="admin_user">管理员用户名</label>
+            <label for="admin_user">管理员账号</label>
             <input type="text" id="admin_user" name="admin_user" required>
         </div>
         <div class="form-group">
