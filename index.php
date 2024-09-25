@@ -44,21 +44,27 @@ if (!file_exists('other/install.lock')) {
 		</div>
 		<div id="imageInfo" class="double-column-layout">
 			<div>
-				<h2>处理前</h2>
+				<h2>原始图片</h2>
 				<div style="text-align:center;">
 					<p><span id="originalSize">0</span> KB</p>
 				</div>
 			</div>
 			<div>
-				<h2>处理后</h2>
+				<h2>压缩图片</h2>
 				<div style="text-align:center;">
 					<p><span id="compressedSize">0</span> KB</p>
 				</div>
 			</div>
 			<div>
-				<h2>压缩率</h2>
+				<h2>压缩比率</h2>
 				<div style="text-align:center;">
 					<p><span id="save">0</span>%</p>
+				</div>
+			</div>
+			<div>
+				<h2>处理用时</h2>
+				<div style="text-align:center;">
+					<p><span id="processingTime">0</span>ms</p>
 				</div>
 			</div>
 		</div>
