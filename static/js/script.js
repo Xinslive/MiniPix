@@ -10,6 +10,7 @@ const srcName = document.getElementById('srcName');
 const originalSize = document.getElementById('originalSize');
 const compressedSize = document.getElementById('compressedSize');
 const save = document.getElementById('save');
+const processingTime = document.getElementById('processingTime');
 const pasteOrUrlInput = document.getElementById('pasteOrUrlInput');
 const token = '1c17b11693cb5ec63859b091c5b9c1b2';
 const deleteImageButton = document.getElementById('deleteImageButton');
@@ -101,10 +102,12 @@ function uploadImage(file) {
                 if (response.url) {
                     imageUrl.value = response.url;
                     srcName.value = response.srcName;
+                    processingTime.value = response.ptime;
                     if (response.width && response.height && response.size) {
                         compressedSize.textContent = (response.size / 1024).toFixed(2);
                         const savePercentage = ((file.size - response.size) / file.size * 100).toFixed(2);
-                        document.getElementById('save').textContent = savePercentage
+                        document.getElementById('save').textContent = savePercentage;
+                        document.getElementById('processingTime').textContent = `${response.ptime}`
                         document.getElementById('htmlUrl').value = `<img src="${response.url}" alt="${response.srcName}">`;
                         document.getElementById('markdownUrl').value = `![${response.srcName}](${response.url})`;
                         document.getElementById('bbcode').value = `[img=${response.width},${response.height}]${response.url}[/img]`;
