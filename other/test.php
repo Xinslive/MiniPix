@@ -78,7 +78,7 @@ $supportWebp = in_array('WEBP', $supportedFormats);
     <div class="result1">
         <h2>WEBP 格式</h2>
         <p class="<?php echo $supportWebp ? 'supported' : 'unsupported'; ?>">
-            <?php echo $supportWebp ? '你的服务器支持 WEBP 格式' : '想办法换一个支持WEBP的拓展版本吧'; ?>
+            <?php echo $supportWebp ? '你的拓展支持 WEBP 格式' : '想办法换一个支持WEBP的拓展版本吧'; ?>
         </p>
     </div>
 
