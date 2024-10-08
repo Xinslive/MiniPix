@@ -1,8 +1,7 @@
-## **演示站点**
+## **演示图片**
+由于成本问题，不再提供演示站点。
 
-首页：[MiniPix.Pro](https://MiniPix.Pro/)
-
-后台：[MiniPix.Pro 管理后台](https://MiniPix.Pro/admin)
+![image](https://github.com/user-attachments/assets/40931d8a-79b8-4bf1-8f16-2f7be1c1997e)
 
 ## **项目简介**
 一款专为个人需求设计的高效图床解决方案，集成了强大的图片压缩功能与优雅的前台后台界面。
