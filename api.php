@@ -2,6 +2,9 @@
 //include 'other/validate.php';
 require_once 'other/webp.php';
 
+ob_start();
+ignore_user_abort(true);
+set_time_limit(0);
 $config = parse_ini_file('./other/config.ini');
 
 $validToken = $config['validToken'];
@@ -24,9 +27,8 @@ function logMessage($message) {
 }
 
 function respondAndExit($response) {
-    ob_end_clean();
+    while (ob_get_level()) ob_end_clean();
     echo json_encode($response);
-    ob_flush();
     flush();
     exit;
 }
