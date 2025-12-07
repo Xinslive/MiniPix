@@ -41,36 +41,23 @@ function ToWebp($source, $destination, $quality) {
 }
 
 function GifToWebp($source, $destination, $quality) {
-    try {
-        if (!file_exists($source) || !is_readable($source)) {
-            return false;
-        }
-        $gif = new Imagick();
-        $gif->readImage($source);
+    if (!file_exists($source) || !is_readable($source)) return false;
+    $gif = new Imagick($source);
+    if ($gif->getNumberImages() > 1) {
         $gif = $gif->coalesceImages();
-        foreach ($gif as $frame) {
-            $frame->stripImage();
-            if ($frame->getImageAlphaChannel() === Imagick::ALPHACHANNEL_UNDEFINED) {
-                $frame->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
-            }
-            $frame->setImageFormat('webp');
-            $frame->setOption('webp:lossless', 'false');
-            $frame->setOption('webp:method', '6');
-            $frame->setOption('webp:thread-level', '1');
-            $frame->setOption('webp:alpha-quality', '90');
-            $frame->setImageDispose(Imagick::DISPOSE_BACKGROUND);
-            $delay = $frame->getImageDelay();
-            $frame->setImageDelay($delay);
-            $frame->setImageCompressionQuality($quality);
-        }
-        $gif = $gif->optimizeImageLayers();
-        $result = $gif->writeImages($destination, true);
-        $gif->clear();
-        $gif->destroy();
-        return $result;
-    } catch (Exception $e) {
-        logMessage('GIF转换WebP失败: ' . $e->getMessage());
-        return false;
     }
+    $gif->setOption('webp:lossless', 'false');
+    $gif->setOption('webp:method', '3');
+    $gif->setOption('webp:thread-level', '1');
+    $gif->setOption('webp:alpha-quality', '90');
+    foreach ($gif as $frame) {
+        $frame->setImageFormat('webp');
+        $frame->setImageCompressionQuality($quality);
+        $frame->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
+    }
+    $result = $gif->writeImages($destination, true);
+    $gif->clear();
+    $gif->destroy();
+    return $result;
 }
 ?>
