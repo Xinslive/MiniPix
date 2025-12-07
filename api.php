@@ -1,7 +1,6 @@
 <?php
 //include 'other/validate.php';
 require_once 'other/webp.php';
-
 ob_start();
 ignore_user_abort(true);
 set_time_limit(0);
@@ -90,7 +89,7 @@ if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
     $startTime = microtime(true);
     logMessage("接收文件成功: $newFilePath");
     ini_set('memory_limit', '1024M');
-    set_time_limit(60);
+    set_time_limit(300);
     $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 70;
     if ($quality === 100) {
         $finalFilePath = $newFilePath;
