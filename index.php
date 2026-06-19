@@ -19,7 +19,7 @@ if (!file_exists('other/install.lock')) {
          <button id="deleteImageButton">×</button>
 		<form id="uploadForm" action="api.php" method="POST" enctype="multipart/form-data">
 			<div id="imageUploadBox" onclick="document.getElementById('imageInput').click();">
-				<input type="file" id="imageInput" name="image" accept="image/png, image/jpeg, image/webp, image/svg+xml, image/gif, image/avif" required style="display: none;" onchange="updateImagePreview(event);">
+				<input type="file" id="imageInput" name="image" accept="image/png, image/jpeg, image/webp, image/svg+xml, image/gif, image/avif" required style="display: none;">
 				<img id="imagePreview" src="static/svg/up.svg" alt="预览图片">
 			</div>
 			<div id="pasteOrUrlInputBox">
@@ -41,6 +41,7 @@ if (!file_exists('other/install.lock')) {
 			<input type="text" class="copy-indicator" id="bbcode" readonly placeholder="BBCode">
 			<input type="text" class="copy-indicator" id="htmlUrl" readonly placeholder="HTML代码">
 			<input type="text" class="hidden-input" id="srcName" placeholder="图片名称">
+			<input type="text" class="hidden-input" id="deleteToken" placeholder="删除凭据">
 		</div>
 		<div id="imageInfo" class="double-column-layout">
 			<div>
@@ -68,7 +69,7 @@ if (!file_exists('other/install.lock')) {
 				</div>
 			</div>
 		</div>
-<script type="text/javascript" src="static/js/script.js"></script>
+<script type="text/javascript" src="static/js/script.js?v=2026061901"></script>
 <script type="text/javascript" src="static/js/cursor.js"></script>
 </body>
 </html>

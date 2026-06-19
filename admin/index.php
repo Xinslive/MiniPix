@@ -1,31 +1,34 @@
 <?php
 session_start();
+require_once __DIR__ . '/../other/core.php';
 
-$config = parse_ini_file('../other/config.ini');
-$dbHost = $config['dbHost'];
-$dbUser = $config['dbUser'];
-$dbPass = $config['dbPass'];
-$dbName = $config['dbName'];
-$adminUser = $config['adminUser'];
-$adminPass = $config['adminPass'];
+try {
+    $config = minipix_load_config();
+    $mysqli = minipix_db($config);
+} catch (Exception $e) {
+    die('连接数据库失败：' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
+}
 
-$mysqli = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
-if ($mysqli->connect_error) {
-    die("连接数据库失败：" . $mysqli->connect_error);
+function minipix_password_matches($password, $storedHash) {
+    if (password_get_info($storedHash)['algo'] !== 0) {
+        return password_verify($password, $storedHash);
+    }
+
+    return hash_equals((string)$storedHash, (string)$password);
 }
 
 if (isset($_POST['login'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = (string)($_POST['username'] ?? '');
+    $password = (string)($_POST['password'] ?? '');
 
-    if ($username === $adminUser && $password === $adminPass) {
+    if (hash_equals((string)($config['adminUser'] ?? ''), $username) && minipix_password_matches($password, (string)($config['adminPass'] ?? ''))) {
         $_SESSION['loggedin'] = true;
     } else {
         $error = "用户名或密码无效。";
     }
 }
 
-if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
+if (empty($_SESSION['loggedin'])) {
     echo '
     <!DOCTYPE html>
     <html lang="zh-CN">
@@ -50,7 +53,7 @@ if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
                 <div class="action-buttons">
                     <button type="submit" name="login">登录</button>
                 </div>
-                ' . (isset($error) ? '<div class="error-message">' . $error . '</div>' : '') . '
+                ' . (isset($error) ? '<div class="error-message">' . htmlspecialchars($error, ENT_QUOTES, 'UTF-8') . '</div>' : '') . '
             </form>
         </div>
         <script type="text/javascript" src="/static/js/cursor.js"></script>
@@ -61,31 +64,35 @@ if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
 }
 
 function renderImages($mysqli, $items_per_page, $offset) {
-    $query = "SELECT * FROM images ORDER BY id DESC LIMIT $items_per_page OFFSET $offset";
-    $result = $mysqli->query($query);
+    $stmt = $mysqli->prepare('SELECT id, url, srcName FROM images ORDER BY id DESC LIMIT ? OFFSET ?');
+    if (!$stmt) {
+        throw new RuntimeException('查询错误：' . $mysqli->error);
+    }
+    $stmt->bind_param('ii', $items_per_page, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     $images = [];
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $images[] = [
-                'id' => $row['id'],
-                'url' => $row['url'],
-                'srcName' => $row['srcName']
-            ];
-        }
+    while ($row = $result->fetch_assoc()) {
+        $images[] = [
+            'id' => (int)$row['id'],
+            'url' => $row['url'],
+            'srcName' => $row['srcName'],
+        ];
     }
+    $stmt->close();
     return $images;
 }
 
 function renderPagination($mysqli, $items_per_page, $current_page) {
-    $total_pages_query = "SELECT COUNT(id) as total FROM images";
+    $total_pages_query = 'SELECT COUNT(id) as total FROM images';
     $total_pages_result = $mysqli->query($total_pages_query);
 
     if ($total_pages_result) {
-        $total_rows = $total_pages_result->fetch_assoc()['total'];
-        $total_pages = ceil($total_rows / $items_per_page);
+        $total_rows = (int)$total_pages_result->fetch_assoc()['total'];
+        $total_pages = (int)ceil($total_rows / $items_per_page);
     } else {
-        die("查询错误：" . $mysqli->error);
+        throw new RuntimeException('查询错误：' . $mysqli->error);
     }
 
     $max_links = 4;
@@ -134,17 +141,18 @@ function renderPagination($mysqli, $items_per_page, $current_page) {
     return $pagination;
 }
 
-$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$current_page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, ['options' => ['default' => 1, 'min_range' => 1]]);
 $items_per_page = 50;
 $offset = ($current_page - 1) * $items_per_page;
 
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
-    $images = renderImages($mysqli, $items_per_page, $offset);
-    $pagination = renderPagination($mysqli, $items_per_page, $current_page);
-
-    header('Content-Type: application/json');
-    echo json_encode(['images' => $images, 'pagination' => $pagination]);
-    exit;
+    try {
+        $images = renderImages($mysqli, $items_per_page, $offset);
+        $pagination = renderPagination($mysqli, $items_per_page, $current_page);
+        minipix_json_response(['images' => $images, 'pagination' => $pagination]);
+    } catch (Exception $e) {
+        minipix_json_response(['images' => [], 'pagination' => '', 'error' => $e->getMessage()], 500);
+    }
 }
 ?>
 

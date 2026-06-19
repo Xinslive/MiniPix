@@ -7,15 +7,47 @@ const progressContainer = document.getElementById('progressContainer');
 const urlOutput = document.getElementById('urlOutput');
 const imageUrl = document.getElementById('imageUrl');
 const srcName = document.getElementById('srcName');
+const deleteToken = document.getElementById('deleteToken');
 const originalSize = document.getElementById('originalSize');
 const compressedSize = document.getElementById('compressedSize');
 const save = document.getElementById('save');
 const processingTime = document.getElementById('processingTime');
 const pasteOrUrlInput = document.getElementById('pasteOrUrlInput');
-const token = '1c17b11693cb5ec63859b091c5b9c1b2';
+let uploadToken = '';
+let uploadEndpoint = 'api.php';
+let uploadConfigPromise = null;
 const deleteImageButton = document.getElementById('deleteImageButton');
 const deleteButtonWrapper = document.getElementById('deleteButtonWrapper');
 const imageUploadBox = document.getElementById('imageUploadBox');
+
+function loadUploadConfig() {
+    if (uploadConfigPromise) {
+        return uploadConfigPromise;
+    }
+
+    uploadConfigPromise = fetch(`other/config-api.php?t=${Date.now()}`, {
+        cache: 'no-store',
+        credentials: 'same-origin',
+    })
+        .then(response => response.ok ? response.json() : null)
+        .then(config => {
+            if (config && config.token) {
+                uploadToken = config.token;
+            }
+            if (config && config.apiEndpoint) {
+                uploadEndpoint = config.apiEndpoint;
+            }
+            return config;
+        })
+        .catch(() => {
+            uploadConfigPromise = null;
+            return null;
+        });
+
+    return uploadConfigPromise;
+}
+
+loadUploadConfig();
 
 qualityInput.addEventListener('input', () => {
     qualityOutput.textContent = qualityInput.value;
@@ -46,7 +78,7 @@ pasteOrUrlInput.addEventListener('input', () => {
             imagePreview.style.display = 'block';
             fetch(url).then(response => response.blob()).then(blob => {
                 originalSize.textContent = (blob.size / 1024).toFixed(2);
-                uploadImage(blob);
+                uploadImage(new File([blob], 'remote-image', { type: blob.type || 'image/png' }));
             });
         };
         img.onerror = () => {
@@ -74,13 +106,22 @@ function handleFile(file) {
     }
 }
 
-function uploadImage(file) {
+async function uploadImage(file) {
+    if (!uploadToken) {
+        await loadUploadConfig();
+    }
+
+    if (!uploadToken) {
+        alert('上传配置加载失败，请刷新页面后重试。');
+        return;
+    }
+
     const formData = new FormData();
     formData.append('image', file);
     formData.append('quality', qualityInput.value);
-    formData.append('token', token);
+    formData.append('token', uploadToken);
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'api.php', true);
+    xhr.open('POST', uploadEndpoint, true);
     xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
             const percentComplete = (event.loaded / event.total) * 100;
@@ -90,6 +131,8 @@ function uploadImage(file) {
         }
     });
     imageUrl.value = '';
+    srcName.value = '';
+    deleteToken.value = '';
     compressedSize.textContent = '0';
     document.getElementById('save').textContent = '0';
     document.getElementById('htmlUrl').value = '';
@@ -97,12 +140,17 @@ function uploadImage(file) {
     document.getElementById('bbcode').value = '';
     xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
+            let response = {};
+            try {
+                response = JSON.parse(xhr.responseText);
+            } catch (error) {
+                response = {};
+            }
             if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
                 if (response.url) {
                     imageUrl.value = response.url;
                     srcName.value = response.srcName;
-                    processingTime.value = response.ptime;
+                    deleteToken.value = response.deleteToken || '';
                     if (response.width && response.height && response.size) {
                         compressedSize.textContent = (response.size / 1024).toFixed(2);
                         const savePercentage = ((file.size - response.size) / file.size * 100).toFixed(2);
@@ -118,9 +166,11 @@ function uploadImage(file) {
                     }
                 } else if (response.error) {
                     alert(response.error);
+                } else if (response.message) {
+                    alert(response.message);
                 }
             } else {
-                alert('上传失败，请重试。');
+                alert(response.message || '上传失败，请重试。');
             }
             setTimeout(() => {
                 progressContainer.style.display = 'none';
@@ -135,14 +185,13 @@ function uploadImage(file) {
 document.getElementById('deleteImageButton').addEventListener('click', function(event) {
     event.stopPropagation();
     const srcNames = srcName.value;
-    console.log('srcName:', srcName);
     if (srcNames) {
         fetch('./other/del.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `srcName=${encodeURIComponent(srcNames)}`,
+            body: `srcName=${encodeURIComponent(srcNames)}&deleteToken=${encodeURIComponent(deleteToken.value)}`,
         })
         .then((response) => {
             if (!response.ok) {
