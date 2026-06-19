@@ -13,6 +13,79 @@ if (file_exists(__DIR__ . '/install.lock')) {
 $step = isset($_GET['step']) ? max(1, intval($_GET['step'])) : 1;
 $error = '';
 
+function install_public_path($path) {
+    $root = rtrim(MINIPIX_ROOT, '/') . '/';
+    if (strpos($path, $root) === 0) {
+        return substr($path, strlen($root));
+    }
+    return $path;
+}
+
+function install_environment_errors() {
+    $errors = [];
+
+    if (!is_dir(MINIPIX_OTHER)) {
+        $errors[] = 'other 目录不存在。';
+    } elseif (!is_writable(MINIPIX_OTHER)) {
+        $errors[] = 'other 目录不可写，无法生成 config.ini 和 install.lock。';
+    }
+
+    $configPath = minipix_config_path();
+    if (is_file($configPath) && !is_writable($configPath)) {
+        $errors[] = 'other/config.ini 不可写，无法保存安装配置。';
+    }
+
+    $uploadPath = minipix_path('uploads');
+    if (file_exists($uploadPath)) {
+        if (!is_dir($uploadPath)) {
+            $errors[] = 'uploads 已存在但不是目录。';
+        } elseif (!is_writable($uploadPath)) {
+            $errors[] = 'uploads 目录不可写，无法保存上传文件。';
+        }
+    } elseif (!is_writable(MINIPIX_ROOT)) {
+        $errors[] = '网站根目录不可写，无法自动创建 uploads 目录。';
+    }
+
+    return $errors;
+}
+
+function install_assert_environment_ready() {
+    $errors = install_environment_errors();
+    if ($errors) {
+        throw new RuntimeException("安装环境检查未通过：\n" . implode("\n", $errors) . "\n请将以上目录或文件赋予 PHP 运行用户写入权限后重试。");
+    }
+}
+
+function install_ensure_upload_dir() {
+    $uploadPath = minipix_path('uploads');
+    if (!is_dir($uploadPath) && !@mkdir($uploadPath, 0755, true)) {
+        throw new RuntimeException('无法创建 uploads 目录，请确认网站根目录可写。');
+    }
+    if (!is_writable($uploadPath)) {
+        throw new RuntimeException('uploads 目录不可写，请赋予 PHP 运行用户写入权限。');
+    }
+}
+
+function install_read_file($path) {
+    $content = @file_get_contents($path);
+    if ($content === false) {
+        throw new RuntimeException('无法读取 ' . install_public_path($path) . '。');
+    }
+    return $content;
+}
+
+function install_write_file($path, $content, $mode = null) {
+    if (@file_put_contents($path, $content, LOCK_EX) === false) {
+        throw new RuntimeException('无法写入 ' . install_public_path($path) . '，请确认 PHP 运行用户有写入权限。');
+    }
+    if ($mode !== null) {
+        @chmod($path, $mode);
+    }
+    if (!is_file($path)) {
+        throw new RuntimeException(install_public_path($path) . ' 写入后未生成，请检查目录权限。');
+    }
+}
+
 function install_write_section($title, array $values) {
     $content = "[$title]\n";
     foreach ($values as $key => $value) {
@@ -31,94 +104,111 @@ function install_write_other_section(array $values) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($step === 1) {
-        $mysql = [
-            'dbHost' => trim($_POST['db_host'] ?? ''),
-            'dbName' => trim($_POST['db_name'] ?? ''),
-            'dbUser' => trim($_POST['db_user'] ?? ''),
-            'dbPass' => (string)($_POST['db_pass'] ?? ''),
-            'adminUser' => trim($_POST['admin_user'] ?? ''),
-            'adminPass' => password_hash((string)($_POST['admin_pass'] ?? ''), PASSWORD_DEFAULT),
-        ];
+    try {
+        install_assert_environment_ready();
+        install_ensure_upload_dir();
 
-        file_put_contents(__DIR__ . '/config.ini', install_write_section('MySQL', $mysql));
+        if ($step === 1) {
+            $mysql = [
+                'dbHost' => trim($_POST['db_host'] ?? ''),
+                'dbName' => trim($_POST['db_name'] ?? ''),
+                'dbUser' => trim($_POST['db_user'] ?? ''),
+                'dbPass' => (string)($_POST['db_pass'] ?? ''),
+                'adminUser' => trim($_POST['admin_user'] ?? ''),
+                'adminPass' => password_hash((string)($_POST['admin_pass'] ?? ''), PASSWORD_DEFAULT),
+            ];
 
-        $mysqli = new mysqli($mysql['dbHost'], $mysql['dbUser'], $mysql['dbPass'], $mysql['dbName']);
-        if ($mysqli->connect_error) {
-            $error = '数据库连接失败: ' . $mysqli->connect_error;
-        } else {
+            mysqli_report(MYSQLI_REPORT_OFF);
+            $mysqli = new mysqli($mysql['dbHost'], $mysql['dbUser'], $mysql['dbPass'], $mysql['dbName']);
+            if ($mysqli->connect_error) {
+                throw new RuntimeException('数据库连接失败: ' . $mysqli->connect_error);
+            }
+
             $mysqli->set_charset('utf8mb4');
             $createTableSQL = "
-                CREATE TABLE IF NOT EXISTS images (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    url VARCHAR(1024) NOT NULL,
-                    path VARCHAR(1024) NOT NULL,
-                    srcName VARCHAR(255) NOT NULL UNIQUE,
-                    storage VARCHAR(32) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    INDEX idx_srcName (srcName),
-                    INDEX idx_created_at (created_at)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-            ";
+                    CREATE TABLE IF NOT EXISTS images (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        url VARCHAR(1024) NOT NULL,
+                        path VARCHAR(1024) NOT NULL,
+                        srcName VARCHAR(255) NOT NULL UNIQUE,
+                        storage VARCHAR(32) NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        INDEX idx_srcName (srcName),
+                        INDEX idx_created_at (created_at)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                ";
 
             if ($mysqli->query($createTableSQL) === false) {
-                $error = '创建数据表失败: ' . $mysqli->error;
-            } else {
-                header('Location: install.php?step=2');
-                exit;
+                $message = '创建数据表失败: ' . $mysqli->error;
+                $mysqli->close();
+                throw new RuntimeException($message);
             }
             $mysqli->close();
+
+            install_write_file(minipix_config_path(), install_write_section('MySQL', $mysql), 0600);
+
+            header('Location: install.php?step=2');
+            exit;
+        } elseif ($step === 2) {
+            $storageMethod = $_POST['storage_method'] ?? 'local';
+            if (!in_array($storageMethod, ['local', 'oss', 'ftp', 's3'], true)) {
+                $storageMethod = 'local';
+            }
+
+            $other = [
+                'validToken' => bin2hex(random_bytes(16)),
+                'storage' => $storageMethod,
+                'imageFormat' => 'webp',
+            ];
+            $oss = [
+                'ossAccessKeyId' => $_POST['oss_accessKeyId'] ?? '',
+                'ossAccessKeySecret' => $_POST['oss_accessKeySecret'] ?? '',
+                'ossEndpoint' => $_POST['oss_endpoint'] ?? '',
+                'ossBucket' => $_POST['oss_bucket'] ?? '',
+                'ossdomain' => $_POST['oss_domain'] ?? '',
+            ];
+            $s3 = [
+                'S3Region' => $_POST['S3Region'] ?? '',
+                'S3Bucket' => $_POST['S3Bucket'] ?? '',
+                'S3Endpoint' => $_POST['S3Endpoint'] ?? '',
+                'S3AccessKeyId' => $_POST['S3AccessKeyId'] ?? '',
+                'S3AccessKeySecret' => $_POST['S3AccessKeySecret'] ?? '',
+                'customUrlPrefix' => $_POST['customUrlPrefix'] ?? '',
+            ];
+            $ftp = [
+                'ftpHost' => $_POST['ftpHost'] ?? '',
+                'ftpPort' => $_POST['ftpPort'] ?? '21',
+                'ftpUsername' => $_POST['ftpUsername'] ?? '',
+                'ftpPassword' => $_POST['ftpPassword'] ?? '',
+                'ftpdomain' => $_POST['ftpdomain'] ?? '',
+            ];
+
+            $configPath = minipix_config_path();
+            if (!is_file($configPath)) {
+                throw new RuntimeException('请先完成数据库配置步骤。');
+            }
+            $configContent = install_read_file($configPath);
+            $configContent .= "\n" . install_write_other_section($other);
+            $configContent .= "\n" . install_write_section('OSS', $oss);
+            $configContent .= "\n" . install_write_section('S3', $s3);
+            $configContent .= "\n" . install_write_section('FTP', $ftp);
+
+            install_write_file($configPath, $configContent, 0600);
+            install_write_file(minipix_other_path('install.lock'), '安装锁');
+
+            if (!is_file(minipix_other_path('install.lock'))) {
+                throw new RuntimeException('install.lock 未生成，安装未完成。');
+            }
+
+            header('Location: /');
+            exit;
         }
-    } elseif ($step === 2) {
-        $storageMethod = $_POST['storage_method'] ?? 'local';
-        if (!in_array($storageMethod, ['local', 'oss', 'ftp', 's3'], true)) {
-            $storageMethod = 'local';
-        }
-
-        $other = [
-            'validToken' => bin2hex(random_bytes(16)),
-            'storage' => $storageMethod,
-            'imageFormat' => 'webp',
-        ];
-        minipix_write_frontend_config($other['validToken']);
-        $oss = [
-            'ossAccessKeyId' => $_POST['oss_accessKeyId'] ?? '',
-            'ossAccessKeySecret' => $_POST['oss_accessKeySecret'] ?? '',
-            'ossEndpoint' => $_POST['oss_endpoint'] ?? '',
-            'ossBucket' => $_POST['oss_bucket'] ?? '',
-            'ossdomain' => $_POST['oss_domain'] ?? '',
-        ];
-        $s3 = [
-            'S3Region' => $_POST['S3Region'] ?? '',
-            'S3Bucket' => $_POST['S3Bucket'] ?? '',
-            'S3Endpoint' => $_POST['S3Endpoint'] ?? '',
-            'S3AccessKeyId' => $_POST['S3AccessKeyId'] ?? '',
-            'S3AccessKeySecret' => $_POST['S3AccessKeySecret'] ?? '',
-            'customUrlPrefix' => $_POST['customUrlPrefix'] ?? '',
-        ];
-        $ftp = [
-            'ftpHost' => $_POST['ftpHost'] ?? '',
-            'ftpPort' => $_POST['ftpPort'] ?? '21',
-            'ftpUsername' => $_POST['ftpUsername'] ?? '',
-            'ftpPassword' => $_POST['ftpPassword'] ?? '',
-            'ftpdomain' => $_POST['ftpdomain'] ?? '',
-        ];
-
-        $configPath = __DIR__ . '/config.ini';
-        $configContent = file_get_contents($configPath);
-        $configContent .= "\n" . install_write_other_section($other);
-        $configContent .= "\n" . install_write_section('OSS', $oss);
-        $configContent .= "\n" . install_write_section('S3', $s3);
-        $configContent .= "\n" . install_write_section('FTP', $ftp);
-
-        file_put_contents($configPath, $configContent);
-        chmod($configPath, 0600);
-        file_put_contents(__DIR__ . '/install.lock', '安装锁');
-
-        header('Location: /');
-        exit;
+    } catch (Exception $e) {
+        $error = $e->getMessage();
     }
 }
+
+$environmentErrors = install_environment_errors();
 
 ?>
 
@@ -149,6 +239,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="container">
 <h2>网站安装向导</h2>
+<?php if ($environmentErrors): ?>
+    <div class="error-message">
+        <p><?php echo nl2br(htmlspecialchars("安装环境检查未通过：\n" . implode("\n", $environmentErrors), ENT_QUOTES, 'UTF-8')); ?></p>
+    </div>
+<?php endif; ?>
 <?php if ($step === 1): ?>
     <form action="install.php?step=1" method="post">
         <div class="form-group">
@@ -270,7 +365,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 <?php if ($error): ?>
     <div class="error-message">
-        <p><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></p>
+        <p><?php echo nl2br(htmlspecialchars($error, ENT_QUOTES, 'UTF-8')); ?></p>
     </div>
 <?php endif; ?>
 </div>

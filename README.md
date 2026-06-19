@@ -65,7 +65,7 @@ client_max_body_size 50m;
 ## 安装
 
 1. 将项目文件上传到网站根目录。
-2. 确认网站运行目录对 `other/`、`uploads/` 有写入权限。
+2. 确认 PHP 运行用户对 `other/`、`uploads/` 有写入权限。如果 `uploads/` 不存在，安装程序会在网站根目录可写时自动创建。
 3. 浏览器访问你的域名，会自动进入 `other/install.php`。
 4. 填写 MySQL、管理员账号、存储方式等信息。
 5. 安装完成后会生成：
@@ -320,7 +320,7 @@ client_max_body_size
 
 ### 安装页重复出现
 
-检查 `other/install.lock` 是否存在，以及 PHP 运行用户是否有权限读取该文件。
+新版安装程序会在安装前检查写入权限，并在无法创建 `other/config.ini`、`other/install.lock` 或 `uploads/` 时直接显示错误。若旧版本或手动部署后仍重复进入安装页，检查 `other/install.lock` 是否存在，以及 PHP 运行用户是否有权限读取该文件。
 
 ## 维护说明
 
